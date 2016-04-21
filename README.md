@@ -1,8 +1,8 @@
 # ff-core
 
-A package for the flimflam core components, which includes:
+A package for the flimflam core modules:
 
-* render (see flimflam-render)
+* [render](https://github.com/jayrbolton/flimflam-render]
 * UI components:
   * [modal](/modules/modals)
   * [wizard](/modules/wizard)
