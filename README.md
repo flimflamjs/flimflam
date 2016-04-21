@@ -4,12 +4,13 @@ A package for the flimflam core modules:
 
 * [render](https://github.com/jayrbolton/flimflam-render]
 * UI components:
-  * [modal](/modules/modals)
+  * [modal](/modules/modal)
   * [wizard](/modules/wizard)
-  * [notification](/modules/wizard)
+  * [notification](/modules/notification)
   * [button](/modules/button)
   * [tooltip](/modules/tooltip)
   * [form-validation](/modules/form-validation)
+  * [autocomplete](/modules/autocomplete)
   * [confirmation](/modules/confirmation)
 
 
