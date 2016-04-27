@@ -4,7 +4,10 @@
   "description": "Flimflam core UI components",
   "main": "index.js",
   "dependencies": {
-    "flimflam-render": "0.0.4"
+    "flimflam-render": "0.0.4",
+    "flyd": "0.2.2",
+    "ramda": "0.21.0",
+    "snabbdom": "0.4.2"
   },
   "devDependencies": {},
   "scripts": {
