@@ -12,7 +12,6 @@ import h from 'snabbdom/h'
 import flyd from 'flyd'
 import R from 'ramda'
 
-// You can pass in a jump stream: a stream of indexes for the wizard to jump to
 function init(streams) {
   return {
     streams
@@ -29,7 +28,9 @@ function init(streams) {
 
 // Jump to a given step if it is accessible
 const jumpStep = (i, state) =>
-  i <= state.accessible ? R.merge(state, {currentStep: i, accessible: i}) : state
+  i <= state.accessible
+    ? R.merge(state, {currentStep: i, accessible: i})
+    : state
 
 // Increment the current step and increment the maximum accessible step
 // If you advance past the length of the steps, then isCompleted gets set to true
