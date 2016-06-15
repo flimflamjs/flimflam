@@ -22,6 +22,8 @@ function wizComponent(steps) {
   return streams
 }
 
+suite('wizard')
+
 test('sets the header content', () => {
   var streams = wizComponent([ {name: 'x', body: h('div','hi')} ])
   assert.equal(streams.dom$().querySelector('.ff-wizard-index-label').textContent, 'x')
