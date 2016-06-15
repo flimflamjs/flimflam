@@ -2,7 +2,7 @@
 
 A package for the flimflam core UI components:
 
-* [render](https://github.com/jayrbolton/flimflam-render]
+* [render](https://github.com/jayrbolton/flimflam-render)
 * UI components:
   * [modal](/modal)
   * [wizard](/wizard)
