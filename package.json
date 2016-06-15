@@ -18,7 +18,9 @@
     "url": "git+https://github.com/flimflamjs/ff-core.git"
   },
   "keywords": [
-    "flimflam", "ui", "core"
+    "flimflam",
+    "ui",
+    "core"
   ],
   "author": "jay r bolton <jayrbolton@gmail.com> (http://jayrbolton.com/)",
   "license": "MIT",
