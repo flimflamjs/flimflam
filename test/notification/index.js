@@ -11,7 +11,7 @@ var patch = snabbdom.init([ // Init patch function with choosen modules
 , require('snabbdom/modules/eventlisteners') // attaches event listeners
 ])
 
-var notification = require('../../modules/notification')
+var notification = require('../../notification')
 
 function initNotification(state) {
   state = notification.init(state)

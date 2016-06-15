@@ -11,7 +11,7 @@ var patch = snabbdom.init([ // Init patch function with choosen modules
 , require('snabbdom/modules/eventlisteners') // attaches event listeners
 ])
 
-var modal = require('../../modules/modal')
+var modal = require('../../modal')
 
 function initModals(state) {
   const id$ = flyd.stream()

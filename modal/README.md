@@ -2,13 +2,13 @@
 
 ### modal(state)
 
-modals are a view-only component that have nearly zero logic.
+A modal overlay component
 
 ```js
 
-import modal from 'ff-core/modules/modal'
+import modal from 'ff-core/modal'
 
-modal.view({
+modal({
   thisID: 'myModal'      // unique id of this modal (required)
 , id$: flyd.stream()     // stream of current modal ID (null to close) (required)
 , notCloseable: false    // whether the modal can be closed by a user click (otherwise must be closed programmatically). Defaults to false.

@@ -11,7 +11,7 @@ var patch = snabbdom.init([ // Init patch function with choosen modules
 , require('snabbdom/modules/eventlisteners') // attaches event listeners
 ])
 
-var button = require('../../modules/button')
+var button = require('../../button')
 
 function initButton(state) {
   state = R.merge({

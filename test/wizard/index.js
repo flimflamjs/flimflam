@@ -11,7 +11,7 @@ var patch = snabbdom.init([ // Init patch function with choosen modules
 , require('snabbdom/modules/eventlisteners') // attaches event listeners
 ])
 
-var wizard = require('../../modules/wizard')
+var wizard = require('../../wizard')
 
 function wizComponent(steps) {
   var container = document.createElement('div')

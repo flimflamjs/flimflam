@@ -1,28 +1,32 @@
 # ff-core
 
-A package for the flimflam core modules:
+A package for the flimflam core UI components:
 
 * [render](https://github.com/jayrbolton/flimflam-render]
 * UI components:
-  * [modal](/modules/modal)
-  * [wizard](/modules/wizard)
-  * [notification](/modules/notification)
-  * [button](/modules/button)
+  * [modal](/modal)
+  * [wizard](/wizard)
+  * [notification](/notification)
+  * [button](/button)
 
+
+```js
+import modal from 'ff-core/modal'
+import wizard from 'ff-core/wizard'
+import render from 'ff-core/render'
+// etc
+```
+
+Open up each module directory in github, and you can find documentation for each one in the README.md in each directory.
 
 To see a full directory of curated flimflam components, go to
 (https://flimflamjs.github.io)[https://flimflamjs.github.io]. This package is
 just for those components that we think nearly all applications will need (ie,
 a standard lib for ui components).
 
-Every sub-module is separated out under `/modules`. 
+## developing
 
-```js
-import modal from 'ff-core/modules/modal'
-import wizard from 'ff-core/modules/wizard'
-// etc
-```
+Run babel on each .es6 file in each module to produce the corresponding .js file
 
-Open up the modules in github, and you can find documentation for each one in the README.md in each directory.
-
+Tests for each module live inside /test -- use `zuul --local --ui mocha-qunit -- test/index.js` to run the tests (or `npm run test`).
 
