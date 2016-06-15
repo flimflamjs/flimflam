@@ -4,21 +4,21 @@
   "description": "Flimflam core UI components",
   "main": "index.js",
   "dependencies": {
-    "flimflam-render": "0.0.4",
+    "flimflam-render": "0.1.4",
     "flyd": "0.2.2",
     "ramda": "0.21.0",
     "snabbdom": "0.4.2"
   },
   "devDependencies": {},
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "zuul --local --ui mocha-qunit -- test/index.js"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/flimflamjs/ff-core.git"
   },
   "keywords": [
-    "flimflam"
+    "flimflam", "ui", "core"
   ],
   "author": "jay r bolton <jayrbolton@gmail.com> (http://jayrbolton.com/)",
   "license": "MIT",

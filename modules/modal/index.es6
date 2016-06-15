@@ -3,28 +3,19 @@ import h from 'snabbdom/h'
 import R from 'ramda'
 
 
-// -- id can be blank or undefined, which closes modals
-function init(id$) {
-  return {
-    streams: {currentID: id$}
-  , state:   {currentID: ''}
-  }
-}
-  
-
-const view = (ctx, config) =>
+const view = state =>
   h('div.ff-modalBackdrop', { // shaded overlay around modal
-    class: { inView: ctx.state.currentID === config.id }
-  , on: {click: closeIfOnBackdrop(ctx.streams.currentID)}
+    class: { 'ff-modalBackdrop--inView': state.id$() === state.thisID }
+  , on: {click: closeIfOnBackdrop(state.id$)}
   }, [
-    h('div', {
-      props: { id: config.id , className: 'ff-modal ' + (config.className || '') }
-    , class: { inView: ctx.state.currentID === config.id }
+    h('div.ff-modal', {
+      props: { id: state.thisID , className: 'ff-modal ' + (state.className || '') }
+    , class: { 'ff-modal--inView': state.id$() === state.thisID }
     }, [
-      config.notCloseable ? '' : closeBtn(ctx.streams.currentID)
-    , config.title ? header(config) : ''
-    , body(config)
-    , config.footer ? footer(config) : ''
+      state.notCloseable ? '' : closeBtn(state.id$)
+    , state.title ? header(state) : ''
+    , body(state)
+    , state.footer ? footer(state) : ''
     ])
   ])
 
@@ -43,8 +34,8 @@ const body = conf =>
 const closeBtn = id$ =>
   h('img.ff-modal-closeButton', {on: {click: [id$, null]}, props: {innerHTML: '&times;'}})
 
-const footer = (config) =>
-  h('div.ff-modal-footer', config.footer.constructor === Array ? config.footer : [config.footer])
+const footer = state =>
+  h('div.ff-modal-footer', state.footer.constructor === Array ? state.footer : [state.footer])
 
 module.exports = {view, init}
 

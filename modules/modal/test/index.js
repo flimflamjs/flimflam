@@ -4,6 +4,13 @@ import flyd from 'flyd'
 import render from 'flimflam-render'
 import h from 'snabbdom/h'
 
+window.flyd_lift = require('flyd/module/lift')
+window.flyd_switchLatest = require('flyd/module/switchlatest')
+window.flyd_flatMap = require('flyd/module/flatmap')
+window.flyd = flyd
+window.R = require('ramda')
+window.flyd_sampleOn = require('flyd/module/sampleon')
+
 const testView = ctx =>
   h('div', [ modal.view(ctx, { id: 'xyz', body: h('div', 'modal body!'), title: 'modal title!', footer: h('div', 'modal footer!') }) ])
 
@@ -55,4 +62,16 @@ test('it sets currentID to null when the close button is clicked', ()=> {
   div.querySelector(".ff-modal-closeButton").dispatchEvent(click)
   assert.equal(rendered.component$().state.currentID, null)
 })
+
+
+function zip(combinator, streams) {
+  combinator = combinator || Array
+  return flyd.combine(function() {
+    const changes = arguments[arguments.length-1]
+    if(R.equals(changes, streams)) {
+      const self = arguments[arguments.length-2]
+      self(R.apply(combinator, R.map(R.call, streams)))
+    }
+  }, streams)
+}
 

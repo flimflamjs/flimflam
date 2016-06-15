@@ -8,10 +8,6 @@ A package for the flimflam core modules:
   * [wizard](/modules/wizard)
   * [notification](/modules/notification)
   * [button](/modules/button)
-  * [tooltip](/modules/tooltip)
-  * [form-validation](/modules/form-validation)
-  * [autocomplete](/modules/autocomplete)
-  * [confirmation](/modules/confirmation)
 
 
 To see a full directory of curated flimflam components, go to
@@ -22,10 +18,6 @@ a standard lib for ui components).
 Every sub-module is separated out under `/modules`. 
 
 ```js
-import ramda from 'ff-core/modules/ramda'
-import snabbdom from 'ff-core/modules/snabbdom'
-import flyd from 'ff-core/modules/flyd'
-
 import modal from 'ff-core/modules/modal'
 import wizard from 'ff-core/modules/wizard'
 // etc

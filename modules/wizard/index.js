@@ -1,82 +1,95 @@
-// Wizards are subtle and quick to anger
+'use strict';
 
-// Notes on usage:
-// - You can use the stream from wizard.advance$ and wizard.jump% to move steps.
-// - Push a truthy value to the .advance$ stream to advance
-// - Push a step index to the jump$ stream to jump to that step if accessible 
-// - You need to be careful and have form validation (and whole wizard validation) on your steps
-// - Pass your step names and content + followup content into the second arg to wizard.view as an immutable Map
-//   wizard.view(state.wizard, {steps: [{name: 'Payment', paymentStep(state)}, ...], followup: thankYouMessage(state)})
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-import h from 'snabbdom/h'
-import flyd from 'flyd'
-import R from 'ramda'
+var _ramda = require('ramda');
 
-function init(streams) {
-  return {
-    streams
-  , state: { currentStep: 0, accessible: 0, isCompleted: false }
-  , updates: {
-      advance:   advanceStep
-    , jump:      jumpStep
-    , complete:  R.assoc('isCompleted')
-    }
-  }
-}
+var _ramda2 = _interopRequireDefault(_ramda);
 
-// -- Updater functions
+var _snabbdomH = require('snabbdom/h');
 
-// Jump to a given step if it is accessible
-const jumpStep = (i, state) =>
-  i <= state.accessible
-    ? R.merge(state, {currentStep: i, accessible: i})
-    : state
+var _snabbdomH2 = _interopRequireDefault(_snabbdomH);
 
-// Increment the current step and increment the maximum accessible step
-// If you advance past the length of the steps, then isCompleted gets set to true
-const advanceStep = (_, state) =>
-  R.evolve({ currentStep: R.inc, accessible: R.inc }, state)
+var _flyd = require('flyd');
 
-const view = (ctx, config) => {
-  let stepNames  = R.map(R.prop('name'), config.steps)
-  let stepBodies = R.map(R.prop('body'), config.steps)
-  return h('div.wizard-body', [
-    stepIndex(ctx, stepNames)
-  , body(ctx.state, stepBodies)
-  , followup(ctx.state, config.followup)
-  ])
-}
+var _flyd2 = _interopRequireDefault(_flyd);
 
-const followup = (state, content) =>
-  h('div.wizard-followup.padded', {style: {display: state.isCompleted ? 'block' : 'none'}}, [content])
+_flyd2['default'].filter = require('flyd/module/filter');
 
+var mapIndex = _ramda2['default'].addIndex(_ramda2['default'].map);
 
-const stepIndex = (ctx, stepNames) => {
-  let width = 100 / stepNames.length + '%'
-  return h('div.wizard-index'
-  , { style: { display: ctx.state.isCompleted ? 'none' : 'block' } }
-  , R.addIndex(R.map)( (name, idx) => stepHeader(ctx, name, idx, width) , stepNames)
-  )
-}
+// User can pass in any default state data
+var init = function init(state) {
+  // set defaults
+  state = _ramda2['default'].merge({
+    currentStep$: _flyd2['default'].stream(0),
+    jump$: _flyd2['default'].stream(),
+    isCompleted$: _flyd2['default'].stream(false),
+    steps: [],
+    followup: ''
+  }, state || {});
+
+  // Stream of valid jump step indexes -- can only jump backwards
+  var validJump$ = _flyd2['default'].map(_ramda2['default'].head, _flyd2['default'].filter(_ramda2['default'].apply(_ramda2['default'].lte), state.jump$));
+  // Merge in valid jumps into the existing currentStep stream
+  state.currentStep$ = _flyd2['default'].merge(state.currentStep$, validJump$);
+
+  return state;
+};
+
+// state has a steps array and followup object
+// each step object has a name and body
+// followup is just snabbdom content
+var view = function view(state) {
+  var stepNames = _ramda2['default'].map(_ramda2['default'].prop('name'), state.steps);
+  var stepBodies = _ramda2['default'].map(_ramda2['default'].prop('body'), state.steps);
+  return (0, _snabbdomH2['default'])('div.ff-wizard-body', [stepIndex(state, stepNames), body(state, stepBodies), followup(state, state.followup)]);
+};
+
+var followup = function followup(state, content) {
+  return (0, _snabbdomH2['default'])('div.ff-wizard-followup', {
+    style: { display: state.isCompleted$() ? 'block' : 'none' }
+  }, [content]);
+};
+
+var stepIndex = function stepIndex(state, stepNames) {
+  var width = 100 / stepNames.length + '%';
+  var stepHeaders = mapIndex(stepHeader(state, width), stepNames);
+  return (0, _snabbdomH2['default'])('div.ff-wizard-index', {
+    style: { display: state.isCompleted$() ? 'none' : 'block' }
+  }, stepHeaders);
+};
 
 // A step label/header thing to go in the step index/listing
-const stepHeader = (ctx, name, idx, width) =>
-  h('span.wizard-index-label', {
-    style: {width: width}
-  , class: {
-      'is-current': ctx.state.currentStep === idx
-    , 'is-accessible': ctx.state.accessible >= idx
-    }
-  , on: {click: [ctx.streams.jump, idx]}
-  }, name)
+var stepHeader = function stepHeader(state, width) {
+  return function (name, idx) {
+    return (0, _snabbdomH2['default'])('span.ff-wizard-index-label', {
+      style: { width: width },
+      'class': {
+        'ff-wizard-index-label--current': state.currentStep$() === idx,
+        'ff-wizard-index-label--accessible': state.currentStep$() > idx
+      },
+      on: { click: function click(ev) {
+          return state.jump$([idx, state.currentStep$()]);
+        } }
+    }, name);
+  };
+};
 
-const body = (state, stepContents) =>
-  h('div.wizard-steps', {style: {display: state.isCompleted ? 'none' : 'table'}}, stepContents.map((content, idx) => stepBody(state, idx, content)))
+var body = function body(state, stepBodies) {
+  var bodies = mapIndex(stepBody(state), stepBodies);
+  return (0, _snabbdomH2['default'])('div.ff-wizard-steps', {
+    style: { display: state.isCompleted$() ? 'none' : 'block' }
+  }, bodies);
+};
 
-const stepBody = (state, idx, content) =>
-  h('div.wizard-body-step', {
-    style: { display: state.currentStep === idx ? 'block' : 'none' }
-  }, [content])
+var stepBody = function stepBody(state) {
+  return function (content, idx) {
+    return (0, _snabbdomH2['default'])('div.ff-wizard-body-step', {
+      style: { display: state.currentStep$() === idx ? 'block' : 'none' }
+    }, [content]);
+  };
+};
 
-module.exports = {view, init}
+module.exports = { view: view, init: init };
 

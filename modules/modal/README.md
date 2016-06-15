@@ -1,13 +1,16 @@
 # modal
 
-### modal.view(modal_context, config_options)
+### modal(state)
+
+modals are a view-only component that have nearly zero logic.
 
 ```js
 
 import modal from 'ff-core/modules/modal'
 
-modal.view(modal_context, {
-  id: 'myModal'          // unique id of modal (required)
+modal.view({
+  thisID: 'myModal'      // unique id of this modal (required)
+, id$: flyd.stream()     // stream of current modal ID (null to close) (required)
 , notCloseable: false    // whether the modal can be closed by a user click (otherwise must be closed programmatically). Defaults to false.
 , title: 'My Modal'      // some text for the modal header (optional)
 , body: content          // either a single snabbdom element or an array for the body content of the modal (required)
@@ -16,12 +19,12 @@ modal.view(modal_context, {
 
 ```
 
+## styling
+
 If you want to have multiple differently-styled modal versions (eg a full-width one, a sidebar one, a small one, etc), then you can wrap your whole `modal.view` call in another div:
 
 ```js
-h('div.modal--sidebar', [
-  modal.view(modal_context, config)
-])
+h('div.modal--sidebar', [ modal.view(state) ])
 ```
 
 In your styles target the modal classes nested under your parent div class:
@@ -31,12 +34,7 @@ In your styles target the modal classes nested under your parent div class:
   right: 0;
   top: 0;
   width: 400px;
+  height: 100%;
 }
 ```
-
-### modal.init(idStream)
-
-When you init the modal context object, pass in a stream of modal ids.
-
-Simply push a blank string or null value to the `idStream` to close any open modal.
 
