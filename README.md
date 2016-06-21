@@ -8,11 +8,13 @@ A package for the flimflam core UI components:
   * [wizard](/wizard)
   * [notification](/notification)
   * [button](/button)
+  * [validated-form](/validated-form)
 
 
 ```js
 import modal from 'ff-core/modal'
 import wizard from 'ff-core/wizard'
+import validatedForm from 'ff-core/validated-form'
 import render from 'ff-core/render'
 // etc
 ```
