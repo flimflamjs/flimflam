@@ -6,6 +6,7 @@
   "dependencies": {
     "flimflam-render": "0.1.4",
     "flyd": "0.2.2",
+    "form-serialize": "0.7.1",
     "ramda": "0.21.0",
     "snabbdom": "0.4.2"
   },
