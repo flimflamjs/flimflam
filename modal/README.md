@@ -21,6 +21,8 @@ modal({
 
 ## styling
 
+Default functional styling is located in /index.css
+
 If you want to have multiple differently-styled modal versions (eg a full-width one, a sidebar one, a small one, etc), then you can wrap your whole `modal.view` call in another div:
 
 ```js

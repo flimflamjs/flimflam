@@ -1,0 +1,7 @@
+ui: mocha-qunit
+browsers:
+  - name: chrome
+    version: latest
+browserify:
+  - transform: cssify
+  - transform: babelify

@@ -1,1 +1,0 @@
-console.error("Error: Cannot find module '/home/big/j/code/ff-core/modules/modal/test/index.es6' from '/home/big/j/code/ff-core/modules/modal'");
