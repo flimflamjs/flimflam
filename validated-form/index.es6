@@ -4,7 +4,7 @@ import h from 'snabbdom/h'
 import serializeForm from 'form-serialize'
 flyd.filter = require('flyd/module/filter')
 flyd.mergeAll = require('flyd/module/mergeall')
-flyd.keepWhen = require('flyd/module/keepwhen')
+flyd.sampleOn = require('flyd/module/keepwhen')
 flyd.sampleOn = require('flyd/module/sampleon')
 
 import emailRegex from './email-regex.es6'
@@ -49,7 +49,7 @@ function init(state) {
   const errorsOnSubmit$ = flyd.sampleOn(state.submit$, state.errors$)
   // Only valid submit events and data objects
   state.validSubmit$ = flyd.filter(R.compose(R.none, R.values), errorsOnSubmit$)
-  state.validData$ = flyd.keepWhen(state.validSubmit$, state.data$)
+  state.validData$ = flyd.sampleOn(state.validSubmit$, state.data$)
   
   return state
 }

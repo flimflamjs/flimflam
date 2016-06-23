@@ -8,6 +8,8 @@ import h from 'snabbdom/h'
 //   loading$: (optional) (boolean) whether or not we're in a loading state
 
 export default function view(state) {
+  state.error$ = state.error$ || flyd.stream()
+  state.loading$ = state.loading$ || flyd.stream()
 	return h('div.ff-buttonWrapper', {
     class: { 'ff-buttonWrapper--hasError': state.error$() }
   }, [

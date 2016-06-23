@@ -47,7 +47,7 @@ var _currencyRegexEs62 = _interopRequireDefault(_currencyRegexEs6);
 
 _flyd2['default'].filter = require('flyd/module/filter');
 _flyd2['default'].mergeAll = require('flyd/module/mergeall');
-_flyd2['default'].keepWhen = require('flyd/module/keepwhen');
+_flyd2['default'].sampleOn = require('flyd/module/keepwhen');
 _flyd2['default'].sampleOn = require('flyd/module/sampleon');
 
 function init(state) {
@@ -74,7 +74,7 @@ function init(state) {
   var errorsOnSubmit$ = _flyd2['default'].sampleOn(state.submit$, state.errors$);
   // Only valid submit events and data objects
   state.validSubmit$ = _flyd2['default'].filter(_ramda2['default'].compose(_ramda2['default'].none, _ramda2['default'].values), errorsOnSubmit$);
-  state.validData$ = _flyd2['default'].keepWhen(state.validSubmit$, state.data$);
+  state.validData$ = _flyd2['default'].sampleOn(state.validSubmit$, state.data$);
 
   return state;
 }

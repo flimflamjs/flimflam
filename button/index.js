@@ -19,8 +19,10 @@ var _snabbdomH2 = _interopRequireDefault(_snabbdomH);
 //   loading$: (optional) (boolean) whether or not we're in a loading state
 
 function view(state) {
+  state.error$ = state.error$ || flyd.stream();
+  state.loading$ = state.loading$ || flyd.stream();
   return (0, _snabbdomH2['default'])('div.ff-buttonWrapper', {
-    'class': { 'ff-buttonWrapper--hasError': state.loading$() }
+    'class': { 'ff-buttonWrapper--hasError': state.error$() }
   }, [(0, _snabbdomH2['default'])('p.ff-button-error', { style: { display: state.error$() ? 'block' : 'none' } }, state.error$()), (0, _snabbdomH2['default'])('button.ff-button', {
     props: { type: 'submit', disabled: state.loading$() },
     'class': { 'ff-button--loading': state.loading$() }
