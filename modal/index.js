@@ -39,9 +39,9 @@ function view(state) {
 var verticallyCenter = function verticallyCenter(state) {
   return function (vnode) {
     var node = vnode.elm;
-    var docHeight = document.body.offsetHeight;
+    var windowHeight = window.innerHeight;
     var margin = state.margin || 20;
-    var top = (docHeight - node.offsetHeight) / 2;
+    var top = (windowHeight - node.offsetHeight) / 4;
     top = top < margin ? margin : top;
     node.style.top = top + 'px';
 
@@ -50,7 +50,7 @@ var verticallyCenter = function verticallyCenter(state) {
     var footerHeight = footerElm ? footerElm.offsetHeight : 0;
     var headerElm = node.querySelector('.ff-modal-header');
     var headerHeight = headerElm ? headerElm.offsetHeight : 0;
-    var bodyHeight = docHeight - margin * 2 - footerHeight - headerHeight;
+    var bodyHeight = windowHeight - margin * 2 - footerHeight - headerHeight;
     bodyElm.style.height = 'auto';
     if (bodyHeight < bodyElm.offsetHeight) bodyElm.style.height = bodyHeight + 'px';
   };

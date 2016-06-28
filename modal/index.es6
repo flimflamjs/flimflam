@@ -28,9 +28,9 @@ export default function view(state) {
 
 const verticallyCenter = state => vnode => {
   let node = vnode.elm
-  let docHeight = document.body.offsetHeight
+  let windowHeight = window.innerHeight
   let margin = state.margin || 20 
-  let top = (docHeight - node.offsetHeight) / 2
+  let top = (windowHeight - node.offsetHeight) / 4
   top = top < margin ? margin : top
   node.style.top = top + 'px'
   
@@ -39,7 +39,7 @@ const verticallyCenter = state => vnode => {
   let footerHeight = footerElm ? footerElm.offsetHeight : 0
   let headerElm = node.querySelector('.ff-modal-header')
   let headerHeight = headerElm ? headerElm.offsetHeight : 0
-  let bodyHeight = docHeight - margin * 2 - footerHeight - headerHeight
+  let bodyHeight = windowHeight - margin * 2 - footerHeight - headerHeight
   bodyElm.style.height = 'auto'
   if(bodyHeight < bodyElm.offsetHeight) bodyElm.style.height = bodyHeight + 'px'
 }
