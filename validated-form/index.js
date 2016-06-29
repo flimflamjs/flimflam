@@ -47,33 +47,57 @@ var _currencyRegexEs62 = _interopRequireDefault(_currencyRegexEs6);
 
 _flyd2['default'].filter = require('flyd/module/filter');
 _flyd2['default'].mergeAll = require('flyd/module/mergeall');
-_flyd2['default'].sampleOn = require('flyd/module/keepwhen');
 _flyd2['default'].sampleOn = require('flyd/module/sampleon');
+_flyd2['default'].scanMerge = require('flyd/module/scanmerge');
 
 function init(state) {
   state = state || {};
   state = _ramda2['default'].merge({
-    validators: _ramda2['default'].merge(defaultValidators, state.validators || {}),
-    messages: _ramda2['default'].merge(defaultMessages, state.messages || {}),
     focus$: _flyd2['default'].stream(),
     change$: _flyd2['default'].stream(),
-    submit$: _flyd2['default'].stream()
+    submit$: _flyd2['default'].stream(),
+    validators: {},
+    messages: {},
+    constraints: {}
   }, state);
 
-  state.errors$ = errorsStream(state);
+  state.validators = _ramda2['default'].merge(defaultValidators, state.validators);
+  state.messages = _ramda2['default'].merge(defaultMessages, state.messages);
+  state.constraints = state.constraints || {};
+
+  var fieldErr$ = _flyd2['default'].map(validateField(state), state.change$);
+  var submitErr$ = _flyd2['default'].map(validateForm(state), state.submit$);
+  var formErr$ = _flyd2['default'].filter(_ramda2['default'].identity, submitErr$);
+  // Clear all errors on input focus
+  var clearErr$ = _flyd2['default'].map(function (ev) {
+    return [ev.target.name, null];
+  }, state.focus$);
+  // stream of error pairs of [field_name, error_message]
+  var allErrs$ = _flyd2['default'].mergeAll([fieldErr$, formErr$, clearErr$]);
+  // Stream of all errors scanned into one object
+  state.errors$ = _flyd2['default'].scan(function (data, pair) {
+    return _ramda2['default'].assoc(pair[0], pair[1], data);
+  }, {}, allErrs$);
+
   // Stream of field names and new values
   state.nameVal$ = _flyd2['default'].map(function (node) {
     return [node.name, node.value];
   }, state.change$);
   // Stream of all data scanned into one object
-  state.data$ = _flyd2['default'].scan(function (data, pair) {
+  state.data$ = _flyd2['default'].scanMerge([[state.nameVal$, function (data, pair) {
     return _ramda2['default'].assoc(pair[0], pair[1], data);
-  }, {}, state.nameVal$);
+  }] // change sets a single key/val into data
+  , [state.submit$, function (data, form) {
+    return (0, _formSerialize2['default'])(form, { hash: true });
+  }] // submit overrides all data by serializing the whole form
+  ], state.data || {});
 
-  // Streams of errors sampled on form submit
-  var errorsOnSubmit$ = _flyd2['default'].sampleOn(state.submit$, state.errors$);
-  // Only valid submit events and data objects
-  state.validSubmit$ = _flyd2['default'].filter(_ramda2['default'].compose(_ramda2['default'].none, _ramda2['default'].values), errorsOnSubmit$);
+  state.invalidSubmit$ = _flyd2['default'].filter(_ramda2['default'].apply(function (key, val) {
+    return val;
+  }), submitErr$);
+  state.validSubmit$ = _flyd2['default'].filter(_ramda2['default'].apply(function (key, val) {
+    return !val;
+  }), submitErr$);
   state.validData$ = _flyd2['default'].sampleOn(state.validSubmit$, state.data$);
 
   return state;

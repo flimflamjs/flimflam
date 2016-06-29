@@ -4,8 +4,8 @@ import h from 'snabbdom/h'
 import serializeForm from 'form-serialize'
 flyd.filter = require('flyd/module/filter')
 flyd.mergeAll = require('flyd/module/mergeall')
-flyd.sampleOn = require('flyd/module/keepwhen')
 flyd.sampleOn = require('flyd/module/sampleon')
+flyd.scanMerge = require('flyd/module/scanmerge')
 
 import emailRegex from './email-regex.es6'
 import currencyRegex from './currency-regex.es6'
@@ -32,25 +32,40 @@ import currencyRegex from './currency-regex.es6'
 function init(state) {
   state = state || {}
   state = R.merge({
-    validators: R.merge(defaultValidators, state.validators || {})
-  , messages: R.merge(defaultMessages, state.messages || {})
-  , focus$:  flyd.stream()
+    focus$:  flyd.stream()
   , change$: flyd.stream()
   , submit$: flyd.stream()
-  }, state)
+  , validators: {}
+  , messages: {}
+  , constraints: {}
+  } , state )
 
-  state.errors$ = errorsStream(state)
+  state.validators = R.merge(defaultValidators, state.validators)
+  state.messages = R.merge(defaultMessages, state.messages)
+  state.constraints = state.constraints || {}
+
+  const fieldErr$ = flyd.map(validateField(state), state.change$)
+  const submitErr$ = flyd.map(validateForm(state), state.submit$)
+  const formErr$ = flyd.filter(R.identity, submitErr$)
+  // Clear all errors on input focus
+  const clearErr$ = flyd.map(ev => [ev.target.name, null], state.focus$)
+  // stream of error pairs of [field_name, error_message]
+  const allErrs$ = flyd.mergeAll([fieldErr$, formErr$, clearErr$])
+  // Stream of all errors scanned into one object
+  state.errors$ = flyd.scan((data, pair) => R.assoc(pair[0], pair[1], data), {}, allErrs$)
+
   // Stream of field names and new values
   state.nameVal$ = flyd.map(node => [node.name, node.value], state.change$)
   // Stream of all data scanned into one object
-  state.data$ = flyd.scan((data, pair) => R.assoc(pair[0], pair[1], data), {}, state.nameVal$)
+  state.data$ = flyd.scanMerge([
+    [state.nameVal$, (data, pair) => R.assoc(pair[0], pair[1], data)]  // change sets a single key/val into data
+  , [state.submit$, (data, form) => serializeForm(form, {hash: true})] // submit overrides all data by serializing the whole form
+  ], state.data || {})
 
-  // Streams of errors sampled on form submit
-  const errorsOnSubmit$ = flyd.sampleOn(state.submit$, state.errors$)
-  // Only valid submit events and data objects
-  state.validSubmit$ = flyd.filter(R.compose(R.none, R.values), errorsOnSubmit$)
+  state.invalidSubmit$ = flyd.filter(R.apply((key, val) => val), submitErr$)
+  state.validSubmit$ = flyd.filter(R.apply((key, val) => !val), submitErr$)
   state.validData$ = flyd.sampleOn(state.validSubmit$, state.data$)
-  
+
   return state
 }
 
