@@ -1,4 +1,5 @@
 import h from 'snabbdom/h'
+import flyd from 'flyd'
 
 // Generate a form submission button with various behavior based on the state
 // Properties of state:
