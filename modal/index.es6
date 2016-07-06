@@ -40,8 +40,8 @@ const verticallyCenter = state => vnode => {
   let headerElm = node.querySelector('.ff-modal-header')
   let headerHeight = headerElm ? headerElm.offsetHeight : 0
   let bodyHeight = windowHeight - margin * 2 - footerHeight - headerHeight
-  bodyElm.style.height = 'auto'
-  if(bodyHeight < bodyElm.offsetHeight) bodyElm.style.height = bodyHeight + 'px'
+  let scrollHeight = bodyElm.scrollHeight
+  if(bodyHeight < scrollHeight) bodyElm.style.height = bodyHeight + 'px'
 }
 
 const addResizeListener = state => vnode => {

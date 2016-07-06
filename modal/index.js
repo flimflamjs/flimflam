@@ -51,8 +51,8 @@ var verticallyCenter = function verticallyCenter(state) {
     var headerElm = node.querySelector('.ff-modal-header');
     var headerHeight = headerElm ? headerElm.offsetHeight : 0;
     var bodyHeight = windowHeight - margin * 2 - footerHeight - headerHeight;
-    bodyElm.style.height = 'auto';
-    if (bodyHeight < bodyElm.offsetHeight) bodyElm.style.height = bodyHeight + 'px';
+    var scrollHeight = bodyElm.scrollHeight;
+    if (bodyHeight < scrollHeight) bodyElm.style.height = bodyHeight + 'px';
   };
 };
 
