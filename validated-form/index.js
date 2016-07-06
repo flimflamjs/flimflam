@@ -149,8 +149,14 @@ var field = _ramda2['default'].curry(function (state, elm) {
 
   return (0, _snabbdomH2['default'])('div.ff-field', {
     'class': { 'ff-field--invalid': invalid }
-  }, [invalid ? (0, _snabbdomH2['default'])('p.ff-field-errorMessage', err) : '', elm]);
+  }, [invalid ? (0, _snabbdomH2['default'])('p.ff-field-errorMessage', {
+    hook: { insert: scrollToThis }
+  }, err) : '', elm]);
 });
+
+var scrollToThis = function scrollToThis(vnode) {
+  vnode.elm.scrollIntoView({ block: 'start', behavior: 'smooth' });
+};
 
 // Pass in an array of validation functions and the event object
 // Will return a pair of [name, errorMsg] (errorMsg will be null if no errors present)

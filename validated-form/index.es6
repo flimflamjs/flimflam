@@ -109,10 +109,19 @@ const field = R.curry((state, elm) => {
   return h('div.ff-field', {
     class: {'ff-field--invalid': invalid}
   }, [
-    invalid ? h('p.ff-field-errorMessage', err) : ''
+    invalid 
+      ? h('p.ff-field-errorMessage', {
+          hook: {insert: scrollToThis}
+        }, err) 
+    : ''
   , elm
   ])
 })
+
+
+const scrollToThis = vnode => {
+  vnode.elm.scrollIntoView({block: 'start', behavior: 'smooth'})
+}
 
 
 // Pass in an array of validation functions and the event object
