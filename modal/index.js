@@ -52,7 +52,7 @@ var verticallyCenter = function verticallyCenter(state) {
     var headerHeight = headerElm ? headerElm.offsetHeight : 0;
     var bodyHeight = windowHeight - margin * 2 - footerHeight - headerHeight;
     var scrollHeight = bodyElm.scrollHeight;
-    if (bodyHeight < scrollHeight) bodyElm.style.height = bodyHeight + 'px';
+    if (bodyHeight < scrollHeight) bodyElm.style.height = bodyHeight + 'px';else bodyElm.style.height = 'auto';
   };
 };
 

@@ -42,6 +42,7 @@ const verticallyCenter = state => vnode => {
   let bodyHeight = windowHeight - margin * 2 - footerHeight - headerHeight
   let scrollHeight = bodyElm.scrollHeight
   if(bodyHeight < scrollHeight) bodyElm.style.height = bodyHeight + 'px'
+  else bodyElm.style.height = 'auto'
 }
 
 const addResizeListener = state => vnode => {
