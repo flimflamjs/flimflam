@@ -1,6 +1,6 @@
 {
   "name": "ff-core",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Flimflam core UI components",
   "main": "index.js",
   "dependencies": {
@@ -12,6 +12,7 @@
   },
   "devDependencies": {
     "babelify": "7.3.0",
+    "babel-preset-es2015": "6.9.0",
     "cssify": "1.0.2",
     "mocha": "2.5.3"
   },
