@@ -5,6 +5,9 @@ flyd.filter = require('flyd/module/filter')
 flyd.scanMerge = require('flyd/module/scanmerge')
 flyd.mergeAll = require('flyd/module/mergeall')
 flyd.sampleOn = require('flyd/module/sampleon')
+flyd.flatMap = require('flyd/module/flatmap')
+flyd.switchLatest = require('flyd/module/switchlatest')
+flyd.lift = require('flyd/module/lift')
 
 function init(state) {
   state = state || {}
@@ -18,20 +21,28 @@ function init(state) {
   , values: []
   }, state)
 
+  state.values$ = state.values$ || flyd.stream(state.values)
+
   state.val$ = flyd.mergeAll([
     flyd.map(ev => ev.currentTarget.value, state.keyup$)
   , state.select$
   ])
   // Stream of events when the user starts on the input and it's empty (ie focus on empty input, or keyup to empty value)
-  const empty$ = flyd.filter(ev => !ev.currentTarget.value, flyd.merge(state.focus$, state.keyup$))
+  const empty$ = flyd.map(
+    ()=> state.values$()
+  , flyd.filter(
+      ev => !ev.currentTarget.value
+    , flyd.merge(state.focus$, state.keyup$)
+    )
+  )
 
+  const withValues$ = flyd.lift(R.pair, state.val$, state.values$)
   state.partialMatches$ = flyd.scanMerge([
-    [state.val$, (matches, val) => val.length ? R.filter(v => v === '' || v.indexOf(val) === 0, state.values) : matches ]
-  , [empty$, matches => state.showInitial ? state.values : []]
+    [withValues$, filterValues]
+  , [empty$, (matches, vals) => state.showInitial ? vals : []]
   , [state.select$, R.always([])]
   ], [])
   if(state.limit) state.partialMatches$ = flyd.map(R.take(state.limit), state.partialMatches$)
-  state.match$ = flyd.map(str => R.find(R.equals(str), state.values), state.val$) // will have undefined values on the stream when not exact match
   
   // Index of currently selected dropdown item
   const downWithLength$ = flyd.sampleOn(state.downArrow$, state.partialMatches$)
@@ -41,6 +52,11 @@ function init(state) {
   ], 0)
 
   return state
+}
+
+const filterValues = (matches, pair) => {
+  let [newVal, values] = pair
+  return newVal.length ? R.filter(v => v === '' || v.indexOf(newVal) === 0, values) : matches
 }
 
 // Is the event an arrow up/down keypress?
