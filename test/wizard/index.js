@@ -64,14 +64,14 @@ test('advancing currentStep sets the first step body to display block none', () 
 
 test('jumping past the currentStep does not change currentStep', () => {
   var streams = wizComponent([ {name: '1', body: '1body'}, {name: '2', body: '2body'}, {name: '3', body: '3body'} ])
-  streams.state.jump$([2, 0])
+  streams.dom$().querySelectorAll('.ff-wizard-index-label')[1].click()
   assert.equal(streams.state.currentStep$(), 0)
 })
 
 test('jumping previous to the currentStep changes the currentStep', () => {
   var streams = wizComponent([ {name: '1', body: '1body'}, {name: '2', body: '2body'}, {name: '3', body: '3body'} ])
   streams.state.currentStep$(1)
-  streams.state.jump$([0, 1])
+  streams.dom$().querySelectorAll('.ff-wizard-index-label')[0].click()
   assert.equal(streams.state.currentStep$(), 0)
 })
 
