@@ -1,6 +1,6 @@
 Simple notification UI component
 
-- Shows notification messages from stream
+- Shows notification messages from a stream
 - Hides message after a given duration.
 - Exports a `view` and an `init` function.
 
