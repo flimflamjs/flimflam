@@ -4,7 +4,7 @@ Simple notification UI component
 - Hides message after a given duration.
 - Exports a `view` and an `init` function.
 
-This is an example of using the notification component in a parent component:
+This is an example of using the notification component in a parent component (a user signup form):
 
 ```js
 import flyd from 'flyd'
