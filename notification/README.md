@@ -4,7 +4,12 @@ Simple notification UI component
 - Hides message after a given duration.
 - Exports a `view` and an `init` function.
 
+This is an example of using the notification component in a parent component:
+
 ```js
+import flyd from 'flyd'
+import h from 'snabbdom/h'
+import notification from 'ff-core/notification'
 
 // In your parent component:
 function init() {
