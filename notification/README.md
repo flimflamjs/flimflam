@@ -2,6 +2,7 @@ Simple notification UI component
 
 - Shows notification messages from stream
 - Hides message after a given duration.
+- Exports a `view` and an `init` function.
 
 ```js
 
@@ -17,11 +18,14 @@ function init() {
   , flyd.map(() => 'That username is taken', takenUsername$)
   ])
 
-  // Initialize your notification's state:
+  // Initialize your notification's state. Pass in a message$ stream (required), and an optional hideDelay parameter to set how long the notification is displayed.
   state.notification = notification.init({message$, hideDelay: 4000})
   // will display each string when they appear on the message$ stream
   // will hide the message after 4 seconds
+
+  return state
 }
+
 
 // In your parent component view:
 function view(state) {
