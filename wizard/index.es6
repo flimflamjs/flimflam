@@ -10,13 +10,14 @@ const init = state => {
   // set defaults
   state = R.merge({
     currentStep$: flyd.stream(0)
-  , jump$: flyd.stream()
-  , isCompleted$: flyd.stream(false)
-  , steps: []
-  , followup: ''
+  , jump$: flyd.stream() // Stream of step jumps: pairs of [destinationStep, currentStep]
+  , isCompleted$: flyd.stream(false) // Is the wizard completed?
+  , steps: [] // Snabbdom content of each step
+  , followup: '' // Snabbdom content of ending step, when the wizard is complete
   }, state || {})
   
   // Stream of valid jump step indexes -- can only jump backwards
+  // Filter out all jumps where the destinationStep (first in pair) is less than currentStep (second in pair)
   const validJump$ = flyd.map(R.head, flyd.filter(R.apply(R.lte), state.jump$))
   // Merge in valid jumps into the existing currentStep stream
   state.currentStep$ = flyd.merge(state.currentStep$, validJump$)
@@ -76,4 +77,3 @@ const stepBody = state => (content, idx) =>
   }, [content])
 
 module.exports = {view, init}
-
