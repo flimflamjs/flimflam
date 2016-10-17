@@ -74,6 +74,14 @@ test('it pushes null to the id stream when backdrop is clicked', () => {
   assert.equal(streams.state.modal1.id$(), null)
 })
 
+test('it does not close on non-closeable modals when the backdrop is clicked', ()=> {
+  var streams = initModals()
+  streams.state.modal2.id$('modal2')
+  assert.equal(streams.state.modal2.id$(), 'modal2')
+  streams.dom$().querySelectorAll('.ff-modalBackdrop')[1].click()
+  assert.equal(streams.state.modal2.id$(), 'modal2')
+})
+
 test('it pushes null to the id stream when close button is clicked', () => {
   var streams = initModals()
   streams.state.modal1.id$('modal1')

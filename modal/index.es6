@@ -2,7 +2,7 @@ import flyd from 'flyd'
 import h from 'snabbdom/h'
 import R from 'ramda'
 
-export default function view(state) {
+function view(state) {
   let hook
   if(state.noVerticalCentering) {
     hook = {}
@@ -11,7 +11,7 @@ export default function view(state) {
   }
   return h('div.ff-modalBackdrop', { // shaded overlay around modal
     class: { 'ff-modalBackdrop--inView': state.id$() === state.thisID }
-  , on: {click: closeIfOnBackdrop(state.id$)}
+  , on: {click: closeIfOnBackdrop(state.id$, state.notCloseable)}
   }, [
     h('div.ff-modal', {
       hook
@@ -50,7 +50,8 @@ const addResizeListener = state => vnode => {
 }
 
 // Push to the close stream if the user clicks the shaded backdrop element (and not anywhere within the modal itself)
-const closeIfOnBackdrop = id$ => ev => {
+const closeIfOnBackdrop = (id$, notCloseable) => ev => {
+  if(notCloseable) return
   const className = ev.target.className
   if(className.indexOf('ff-modalBackdrop') === -1 && className.indexOf('ff-modal-container') === -1) {
     return
@@ -70,3 +71,5 @@ const closeBtn = id$ =>
 const footer = state =>
   h('div.ff-modal-footer', state.footer.constructor === Array ? state.footer : [state.footer])
 
+
+module.exports = view

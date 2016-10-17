@@ -1,38 +1,33 @@
 'use strict';
 
-Object.defineProperty(exports, '__esModule', {
-  value: true
-});
-exports['default'] = view;
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
 var _flyd = require('flyd');
 
 var _flyd2 = _interopRequireDefault(_flyd);
 
-var _snabbdomH = require('snabbdom/h');
+var _h = require('snabbdom/h');
 
-var _snabbdomH2 = _interopRequireDefault(_snabbdomH);
+var _h2 = _interopRequireDefault(_h);
 
 var _ramda = require('ramda');
 
 var _ramda2 = _interopRequireDefault(_ramda);
 
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
 function view(state) {
-  var hook = undefined;
+  var hook = void 0;
   if (state.noVerticalCentering) {
     hook = {};
   } else {
     hook = { insert: addResizeListener(state), postpatch: verticallyCenter(state) };
   }
-  return (0, _snabbdomH2['default'])('div.ff-modalBackdrop', { // shaded overlay around modal
-    'class': { 'ff-modalBackdrop--inView': state.id$() === state.thisID },
-    on: { click: closeIfOnBackdrop(state.id$) }
-  }, [(0, _snabbdomH2['default'])('div.ff-modal', {
+  return (0, _h2.default)('div.ff-modalBackdrop', { // shaded overlay around modal
+    class: { 'ff-modalBackdrop--inView': state.id$() === state.thisID },
+    on: { click: closeIfOnBackdrop(state.id$, state.notCloseable) }
+  }, [(0, _h2.default)('div.ff-modal', {
     hook: hook,
     props: { id: state.thisID },
-    'class': { 'ff-modal--inView': state.id$() === state.thisID }
+    class: { 'ff-modal--inView': state.id$() === state.thisID }
   }, [state.notCloseable ? '' : closeBtn(state.id$), state.title ? header(state) : '', body(state), state.footer ? footer(state) : ''])]);
 }
 
@@ -65,8 +60,9 @@ var addResizeListener = function addResizeListener(state) {
 };
 
 // Push to the close stream if the user clicks the shaded backdrop element (and not anywhere within the modal itself)
-var closeIfOnBackdrop = function closeIfOnBackdrop(id$) {
+var closeIfOnBackdrop = function closeIfOnBackdrop(id$, notCloseable) {
   return function (ev) {
+    if (notCloseable) return;
     var className = ev.target.className;
     if (className.indexOf('ff-modalBackdrop') === -1 && className.indexOf('ff-modal-container') === -1) {
       return;
@@ -76,19 +72,20 @@ var closeIfOnBackdrop = function closeIfOnBackdrop(id$) {
 };
 
 var header = function header(state) {
-  return (0, _snabbdomH2['default'])('div.ff-modal-header', [(0, _snabbdomH2['default'])('h4', [state.title])]);
+  return (0, _h2.default)('div.ff-modal-header', [(0, _h2.default)('h4', [state.title])]);
 };
 
 var body = function body(state) {
-  return (0, _snabbdomH2['default'])('div.ff-modal-body', state.body.constructor === Array ? state.body : [state.body]);
+  return (0, _h2.default)('div.ff-modal-body', state.body.constructor === Array ? state.body : [state.body]);
 };
 
 var closeBtn = function closeBtn(id$) {
-  return (0, _snabbdomH2['default'])('a.ff-modal-closeButton', { on: { click: [id$, null] }, props: { innerHTML: '&times;' } });
+  return (0, _h2.default)('a.ff-modal-closeButton', { on: { click: [id$, null] }, props: { innerHTML: '&times;' } });
 };
 
 var footer = function footer(state) {
-  return (0, _snabbdomH2['default'])('div.ff-modal-footer', state.footer.constructor === Array ? state.footer : [state.footer]);
+  return (0, _h2.default)('div.ff-modal-footer', state.footer.constructor === Array ? state.footer : [state.footer]);
 };
-module.exports = exports['default'];
+
+module.exports = view;
 

@@ -43,6 +43,6 @@ test('it removes notification after a ms delay', done => {
   streams.state.message$('hi!')
   assert.equal(streams.dom$().querySelector('.ff-notification').textContent, 'hi!')
   setTimeout(
-    ts => { console.log('yup'); assert.equal(streams.dom$().querySelector('.ff-notification').textContent, ''); done() }
+    ts => { assert.equal(streams.dom$().querySelector('.ff-notification').textContent, ''); done() }
   , 100)
 })
