@@ -22,7 +22,7 @@ import render from 'ff-core/render'
 Open up each module directory in github, and you can find documentation for each one in the README.md in each directory.
 
 To see a full directory of curated flimflam components, go to
-(https://flimflamjs.github.io)[https://flimflamjs.github.io]. This package is
+[https://flimflamjs.github.io](https://flimflamjs.github.io). This package is
 just for those components that we think nearly all applications will need (ie,
 a standard lib for ui components).
 

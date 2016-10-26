@@ -1,0 +1,65 @@
+* {
+  box-sizing: border-box;
+}
+
+html {
+  font-family: 'Montserrat';
+  font-size: 16px;
+}
+
+.ff-modalBackdrop {
+  visibility: hidden;
+  position: fixed;
+  top: 0;
+  left: 0;
+  background: rgba(0,0,0,.5);
+  height: 100%;
+  width: 100%;
+}
+
+.ff-modalBackdrop.ff-modalBackdrop--inView {
+  visibility: visible;
+}
+
+.ff-modal {
+  position: absolute;
+  width: 500px;
+  background: white;
+  margin-left: -250px;
+  left: 50%;
+}
+
+.ff-modal-closeButton {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+}
+
+.ff-modal-header, 
+.ff-modal-body,
+.ff-modal-footer {
+  padding: 16px;
+}
+
+.ff-modal-footer,
+.ff-modal-header {
+  background: #fbfbfb;
+}
+
+.ff-modal-header {
+  border-bottom: 1px solid rgba(0,0,0,.2);
+}
+
+.ff-modal-footer {
+  border-top: 1px solid rgba(0,0,0,.2);
+}
+
+.ff-modal-footer > *,  
+.ff-modal-header > * {
+  margin: 0;
+}
+
+.ff-modal-body {
+  padding: 16px;
+}
+
