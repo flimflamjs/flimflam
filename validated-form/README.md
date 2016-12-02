@@ -25,6 +25,18 @@ const view => {
 
 ```
 
+streams that the validated form has:
+
+- focus$
+- change$
+- submit$
+- errors$
+- data$
+- validData$
+- invalidSubmit$ 
+- validSubmit$
+
+
 default validators (for constraints): 
 
 | key | val |
