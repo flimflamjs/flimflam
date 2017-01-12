@@ -9,6 +9,7 @@ A package for the flimflam core UI components:
   * [notification](/notification)
   * [button](/button)
   * [validated-form](/validated-form)
+  * [tabswap](/tabswap)
 
 
 ```js
