@@ -25,7 +25,6 @@ function init(state) {
   , values: []
   , hoverVal$: flyd.stream()
   }, state)
-
   state.values$ = state.values$ || flyd.stream(state.values)
 
   state.val$ = flyd.mergeAll([
@@ -72,10 +71,10 @@ const downArrow = ev => ev.keyCode === 40
 const enterKey  = ev => ev.keyCode === 13
 const tabKey    = ev => ev.keyCode === 9
 
-function view(vnode, state) {
+function view(input, state) {
   let matches = state.partialMatches$()
-  vnode.data.on = vnode.data.on || {}
-  vnode.data.on.keydown = ev => {
+  input.data.on = input.data.on || {}
+  input.data.on.keydown = ev => {
     if(upArrow(ev)) {
       state.upArrow$(ev)
       ev.preventDefault()
@@ -90,27 +89,29 @@ function view(vnode, state) {
       return false
     } 
   }
-  vnode.data.on.keyup = state.keyup$
-  vnode.data.on.focus = state.focus$
-  vnode.data.on.blur = state.blur$
-  vnode.data.props = vnode.data.props || {}
-  vnode.data.props.value = state.val$() || ''
+  input.data.on.keyup = state.keyup$
+  input.data.on.focus = state.focus$
+  input.data.on.blur = state.blur$
+  input.data.props = input.data.props || {}
+  input.data.props.value = state.val$() || ''
 
-  let dropdown = h('div.ff-autocomplete-dropdown', {
-    style: {display: matches.length ? 'block' : 'none'}
+  console.log({state})
+
+  let dropdown = h('div', {
+    attrs: {'data-ff-autocomplete-dropdown': matches.length ? 'open' : 'closed'}
   }, R.addIndex(R.map)(dropdownValue(state), matches))
 
-  return h('div.ff-autocomplete', [ vnode , dropdown ])
+  return h('div', {attrs: {'data-ff-autocomplete': ''}}, [input , dropdown])
 }
 
 const dropdownValue = state => (val, idx) => {
-  return h('div.ff-autocomplete-dropdown-value', {
+  return h('div', {
     on: {
       mousedown: ev => ev.preventDefault()
     , click: ev => state.select$(state.partialMatches$[idx])
     , mouseover: [state.hoverVal$, idx]
     }
-  , class: { 'ff-autocomplete-dropdown-value--selecting': state.dropdownIdx$() == idx }
+  , attrs: {'data-ff-autocomplete-value': state.dropdownIdx$() === idx ? 'selecting' : ''}
   }, val)
 }
 

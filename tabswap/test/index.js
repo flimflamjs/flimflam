@@ -3,7 +3,7 @@ import R from 'ramda'
 import assert from 'assert'
 import h from 'snabbdom/h'
 import snabbdom from 'snabbdom'
-import carousel from '../index.es6'
+import tabswap from '../index.es6'
 import render from '../../render'
 
 
@@ -20,7 +20,7 @@ function init() {
     active$: flyd.stream(1)
   }
   const view = state => h('div', [
-    carousel({
+    tabswap({
       labels: ['a', 'b']
     , content: ['content a', 'content b']
     , active$: state.active$

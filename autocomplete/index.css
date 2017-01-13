@@ -1,4 +1,14 @@
-
-.ff-autocomplete-dropdown-value--selecting {
-  background: #f8f8f8;
+[data-ff-autocomplete] {
+}
+[data-ff-autocomplete-dropdown] {
+  padding: 8px;
+}
+[data-ff-autocomplete-dropdown='open'] {
+}
+[data-ff-autocomplete-dropdown='closed'] {
+}
+[data-ff-autocomplete-value] {
+}
+[data-ff-autocomplete-value='selecting'] {
+  background: #ddd;
 }
