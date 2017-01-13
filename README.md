@@ -34,8 +34,8 @@ Components are in es2015: source code lives in `component-name/index.es6` and th
 * To build all components at once, run: `npm run build`
 * To build components individually, run: `babel component-name/index.es6 > component-name/index.js`
 
-Tests for each component live in their own directory under `component-name/test/index.js`.
+Tests for each component live in their own directory under `component-name/test/index.js`. Tests use tape/tape-run/tap-spec
 
 * To run all tests at once, run: `npm run test`
-* To run tests individually, run: `zuul --local -- component-name/test`
+* To run tests individually, use the `run-test.sh` script with the name of the component: `./run-test.sh button`
 
