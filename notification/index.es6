@@ -27,8 +27,8 @@ function init(state) {
 
 
 function view(state) {
-  return h('div.ff-notification', { 
-    class: {'ff-notification--inView': state.msg$()} 
+  return h('div', {
+    attrs: {'data-ff-notification': state.msg$() ? 'shown' : 'hidden'}
   }, state.msg$() ? String(state.msg$()) : '' )
 }
 
