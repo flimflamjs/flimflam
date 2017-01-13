@@ -69,9 +69,6 @@ function init(state) {
   , [state.hoverVal$, function (oldIdx, newIdx) {
     return newIdx;
   }]], 0);
-  _flyd2.default.map(function (x) {
-    return console.log('idx', x);
-  }, state.dropdownIdx$);
 
   return state;
 }
@@ -124,8 +121,6 @@ function view(input, state) {
   input.data.on.blur = state.blur$;
   input.data.props = input.data.props || {};
   input.data.props.value = state.val$() || '';
-
-  console.log({ state: state });
 
   var dropdown = (0, _h2.default)('div', {
     attrs: { 'data-ff-autocomplete-dropdown': matches.length ? 'open' : 'closed' }

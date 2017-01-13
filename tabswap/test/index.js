@@ -1,6 +1,6 @@
 import flyd from 'flyd'
 import R from 'ramda'
-import assert from 'assert'
+import test from 'tape'
 import h from 'snabbdom/h'
 import snabbdom from 'snabbdom'
 import tabswap from '../index.es6'
@@ -33,26 +33,30 @@ function init() {
   return streams
 }
 
-test('it renders the labels', ()=> {
+test('it renders the labels', t=> {
+  t.plan(1)
   const streams = init()
   const labels = streams.container.querySelectorAll('[data-ff-tabswap-label]')
   document.body.appendChild(streams.container)
-  assert.strictEqual(labels.length, 2)
+  t.strictEqual(labels.length, 2)
 })
 
-test('it renders the content', ()=> {
+test('it renders the content', t=> {
+  t.plan(1)
   const streams = init()
   const content = streams.container.querySelectorAll('[data-ff-tabswap-content]')
-  assert.strictEqual(content.length, 2)
+  t.strictEqual(content.length, 2)
 })
 
-test('it renders the text content', ()=> {
+test('it renders the text content', t=> {
+  t.plan(1)
   const streams = init()
   const content = streams.container.textContent
-  assert.strictEqual(content, 'abcontent acontent b')
+  t.strictEqual(content, 'abcontent acontent b')
 })
 
-test('on click of a label, it swaps data states of labels', ()=> {
+test('on click of a label, it swaps data states of labels', t=> {
+  t.plan(1)
   const streams = init()
   const content = streams.container.textContent
   streams.container.querySelectorAll('[data-ff-tabswap-label]')[1].click()
@@ -60,10 +64,11 @@ test('on click of a label, it swaps data states of labels', ()=> {
     node => node.getAttribute('data-ff-tabswap-label')
   , streams.container.querySelectorAll('[data-ff-tabswap-label]')
   )
-  assert.deepEqual(states, ['inactive', 'active'])
+  t.deepEqual(states, ['inactive', 'active'])
 })
 
-test('on click of a label, it swaps data states of content', ()=> {
+test('on click of a label, it swaps data states of content', t=> {
+  t.plan(1)
   const streams = init()
   const content = streams.container.textContent
   streams.container.querySelectorAll('[data-ff-tabswap-label]')[1].click()
@@ -71,5 +76,5 @@ test('on click of a label, it swaps data states of content', ()=> {
     node => node.getAttribute('data-ff-tabswap-content')
   , streams.container.querySelectorAll('[data-ff-tabswap-content]')
   )
-  assert.deepEqual(states, ['inactive', 'active'])
+  t.deepEqual(states, ['inactive', 'active'])
 })

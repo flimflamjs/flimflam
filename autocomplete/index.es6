@@ -55,7 +55,6 @@ function init(state) {
   , [downWithLength$, (idx, matches) => idx >= matches.length-1 ? matches.length-1 : idx + 1] // increment, but not above the length-1
   , [state.hoverVal$, (oldIdx, newIdx) => newIdx]
   ], 0)
-  flyd.map(x => console.log('idx', x), state.dropdownIdx$)
 
   return state
 }
@@ -94,8 +93,6 @@ function view(input, state) {
   input.data.on.blur = state.blur$
   input.data.props = input.data.props || {}
   input.data.props.value = state.val$() || ''
-
-  console.log({state})
 
   let dropdown = h('div', {
     attrs: {'data-ff-autocomplete-dropdown': matches.length ? 'open' : 'closed'}

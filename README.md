@@ -27,9 +27,15 @@ To see a full directory of curated flimflam components, go to
 just for those components that we think nearly all applications will need (ie,
 a standard lib for ui components).
 
-## developing
+## development
 
-Run babel on each .es6 file in each module to produce the corresponding .js file
+Components are in es2015: source code lives in `component-name/index.es6` and the built files are `component-name/index.js`.
 
-Tests for each module live inside /test -- use `zuul --local --ui mocha-qunit -- test/index.js` to run the tests (or `npm run test`).
+* To build all components at once, run: `npm run build`
+* To build components individually, run: `babel component-name/index.es6 > component-name/index.js`
+
+Tests for each component live in their own directory under `component-name/test/index.js`.
+
+* To run all tests at once, run: `npm run test`
+* To run tests individually, run: `zuul --local -- component-name/test`
 

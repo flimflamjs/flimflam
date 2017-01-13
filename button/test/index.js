@@ -1,4 +1,4 @@
-import assert from 'assert'
+import test from 'tape'
 import R from 'ramda'
 import flyd from 'flyd'
 import render from '../../render'
@@ -29,19 +29,18 @@ function initButton(state) {
   return streams
 }
 
-suite('button')
-
-test('setting loading true disables the button', () => {
+test('setting loading true disables the button', t => {
+  t.plan(1)
   const streams = initButton()
   streams.state.loading$(true)
   const btn = streams.dom$().querySelector('[data-ff-button]')
-  assert.equal(btn.disabled, true)
+  t.equal(btn.disabled, true)
 })
 
-test('setting loading true displays loading text', () => {
+test('setting loading true displays loading text', t => {
+  t.plan(1)
   const streams = initButton()
   streams.state.loading$(true)
   const btn = streams.dom$().querySelector('[data-ff-button]')
-  assert.equal(btn.textContent, 'Thinking...')
+  t.equal(btn.textContent, 'Thinking...')
 })
-

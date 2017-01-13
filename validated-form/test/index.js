@@ -1,4 +1,4 @@
-const assert = require('assert')
+const test = require('tape')
 const R = require("ramda")
 const flyd = require("flyd")
 const render = require('../../render')
@@ -33,28 +33,29 @@ function initForm(state) {
   return streams
 }
 
-suite('validated-form')
-
-test('sets invalid class when the field does not satisfy contraints', () => {
+test('sets invalid class when the field does not satisfy contraints', t => {
+  t.plan(1)
   const streams = initForm({ constraints: {email: {email: true, required: true}} })
   const change = new Event('change')
   const input = streams.dom$().querySelector('input')
   input.value = 'xyz'
   input.dispatchEvent(change)
-  assert(R.contains('invalid', input.className))
+  t.ok(R.contains('invalid', input.className))
 })
 
-test('it appends an error message when the field is invalid', () => {
+test('it appends an error message when the field is invalid', t => {
+  t.plan(1)
   const streams = initForm({ constraints: {email: {email: true, required: true}} })
   const change = new Event('change')
   const input = streams.dom$().querySelector('input')
   input.value = 'xyz'
   input.dispatchEvent(change)
   const errElm = streams.dom$().querySelector('[data-ff-field-error]')
-  assert.equal(errElm.textContent, streams.state.messages.email)
+  t.equal(errElm.textContent, streams.state.messages.email)
 })
 
-test("it clears a field's error message on focus", () => {
+test("it clears a field's error message on focus", t => {
+  t.plan(1)
   const streams = initForm({ constraints: {email: {email: true, required: true}} })
   const change = new Event('change')
   const input = streams.dom$().querySelector('input')
@@ -62,10 +63,11 @@ test("it clears a field's error message on focus", () => {
   input.dispatchEvent(change)
   const focus = new Event('focus')
   input.dispatchEvent(focus)
-  assert(!R.contains('invalid', input.className))
+  t.ok(!R.contains('invalid', input.className))
 })
 
-test("it finds the first error on submit", () => {
+test("it finds the first error on submit", t => {
+  t.plan(1)
   const streams = initForm({ constraints: {
     email: {email: true, required: true}
   , password: {required: true, minLength: 7}
@@ -73,26 +75,29 @@ test("it finds the first error on submit", () => {
   const submit = new Event('submit')
   const form = streams.dom$()
   form.dispatchEvent(submit)
-  assert.deepEqual(R.keys(streams.state.errors$()), ['email'])
+  t.deepEqual(R.keys(streams.state.errors$()), ['email'])
 })
 
-test('it does not invalidate blank fields that are not required on change', () => {
+test('it does not invalidate blank fields that are not required on change', t => {
+  t.plan(1)
   const streams = initForm({ constraints: {email: {email: true }} })
   const change = new Event('change')
   const input = streams.dom$().querySelector('input')
   input.dispatchEvent(change)
-  assert(!R.contains('invalid', input.className))
+  t.ok(!R.contains('invalid', input.className))
 })
-test('it does not invalidate blank fields that are not required on submit', () => {
+test('it does not invalidate blank fields that are not required on submit', t => {
+  t.plan(1)
   const streams = initForm({ constraints: {email: {email: true}} })
   const submit = new Event('submit')
   const form = streams.dom$()
   const input = streams.dom$().querySelector('input')
   form.dispatchEvent(submit)
-  assert(!R.contains('invalid', input.className))
+  t.ok(!R.contains('invalid', input.className))
 })
 
-test('it gives data hash on valid submit', () => {
+test('it gives data hash on valid submit', t => {
+  t.plan(1)
   const streams = initForm({ constraints: {email: {email: true}} })
   const submit = new Event('submit')
   const change = new Event('change')
@@ -102,86 +107,96 @@ test('it gives data hash on valid submit', () => {
   input.value = em
   input.dispatchEvent(change)
   form.dispatchEvent(submit)
-  assert.deepEqual(streams.state.validData$(), {email: em})
+  t.deepEqual(streams.state.validData$(), {email: em})
 })
 
 // -- tests of validator functions
 
-suite('validated-form/validators')
-
-test('email', () => {
+test('email', t => {
+  t.plan(2)
   const state = validatedForm.init()
-  assert(state.validators.email('user@example.com'))
-  assert(!state.validators.email('xxyy'))
+  t.ok(state.validators.email('user@example.com'))
+  t.ok(!state.validators.email('xxyy'))
 })
-test('required', () => {
+test('required', t => {
+  t.plan(5)
   const state = validatedForm.init()
-  assert(state.validators.required('user@example.com'))
-  assert(state.validators.required(0))
-  assert(!state.validators.required(null))
-  assert(!state.validators.required(undefined))
-  assert(!state.validators.required(''))
+  t.ok(state.validators.required('user@example.com'))
+  t.ok(state.validators.required(0))
+  t.ok(!state.validators.required(null))
+  t.ok(!state.validators.required(undefined))
+  t.ok(!state.validators.required(''))
 })
-test('currency', () => {
+test('currency', t => {
+  t.plan(6)
   const state = validatedForm.init()
-  assert(state.validators.currency('$10.00'))
-  assert(state.validators.currency('10.00'))
-  assert(state.validators.currency('10'))
-  assert(!state.validators.currency('10.0'))
-  assert(!state.validators.currency('.0'))
-  assert(!state.validators.currency('x'))
+  t.ok(state.validators.currency('$10.00'))
+  t.ok(state.validators.currency('10.00'))
+  t.ok(state.validators.currency('10'))
+  t.ok(!state.validators.currency('10.0'))
+  t.ok(!state.validators.currency('.0'))
+  t.ok(!state.validators.currency('x'))
 })
-test('format', () => {
+test('format', t => {
+  t.plan(2)
   const state = validatedForm.init()
-  assert(state.validators.format(/xyz/, 'xyz'))
-  assert(!state.validators.format(/xyz/, 'zyx'))
+  t.ok(state.validators.format(/xyz/, 'xyz'))
+  t.ok(!state.validators.format(/xyz/, 'zyx'))
 })
-test('isNumber', () => {
+test('isNumber', t => {
+  t.plan(5)
   const state = validatedForm.init()
-  assert(state.validators.isNumber(123))
-  assert(state.validators.isNumber('123'))
-  assert(state.validators.isNumber('123.0000'))
-  assert(state.validators.isNumber('000123.0000'))
-  assert(!state.validators.isNumber('x123'))
+  t.ok(state.validators.isNumber(123))
+  t.ok(state.validators.isNumber('123'))
+  t.ok(state.validators.isNumber('123.0000'))
+  t.ok(state.validators.isNumber('000123.0000'))
+  t.ok(!state.validators.isNumber('x123'))
 })
-test('max', () => {
+test('max', t => {
+  t.plan(3)
   const state = validatedForm.init()
-  assert(state.validators.max(9, 10))
-  assert(state.validators.max(10, 10))
-  assert(!state.validators.max(11, 10))
+  t.ok(state.validators.max(9, 10))
+  t.ok(state.validators.max(10, 10))
+  t.ok(!state.validators.max(11, 10))
 })
-test('min', () => {
+test('min', t => {
+  t.plan(3)
   const state = validatedForm.init()
-  assert(state.validators.min(11, 10))
-  assert(state.validators.min(10, 10))
-  assert(!state.validators.min(9, 10))
+  t.ok(state.validators.min(11, 10))
+  t.ok(state.validators.min(10, 10))
+  t.ok(!state.validators.min(9, 10))
 })
-test('equalTo', () => {
+test('equalTo', t => {
+  t.plan(2)
   const state = validatedForm.init()
-  assert(state.validators.equalTo(10, 10))
-  assert(!state.validators.equalTo(9, 10))
+  t.ok(state.validators.equalTo(10, 10))
+  t.ok(!state.validators.equalTo(9, 10))
 })
-test('maxLength', () => {
+test('maxLength', t => {
+  t.plan(3)
   const state = validatedForm.init()
-  assert(state.validators.maxLength([1,1], 3))
-  assert(state.validators.maxLength([1,1,1], 3))
-  assert(!state.validators.maxLength([1,1,1,1], 3))
+  t.ok(state.validators.maxLength([1,1], 3))
+  t.ok(state.validators.maxLength([1,1,1], 3))
+  t.ok(!state.validators.maxLength([1,1,1,1], 3))
 })
-test('minLength', () => {
+test('minLength', t => {
+  t.plan(3)
   const state = validatedForm.init()
-  assert(state.validators.minLength([1,1,1], 3))
-  assert(state.validators.minLength([1,1,1,1], 3))
-  assert(!state.validators.minLength([1,1], 3))
+  t.ok(state.validators.minLength([1,1,1], 3))
+  t.ok(state.validators.minLength([1,1,1,1], 3))
+  t.ok(!state.validators.minLength([1,1], 3))
 })
-test('lengthEquals', () => {
+test('lengthEquals', t => {
+  t.plan(2)
   const state = validatedForm.init()
-  assert(state.validators.lengthEquals([1,1,1], 3))
-  assert(!state.validators.lengthEquals([1,1], 3))
+  t.ok(state.validators.lengthEquals([1,1,1], 3))
+  t.ok(!state.validators.lengthEquals([1,1], 3))
 })
-test('includedIn', () => {
+test('includedIn', t => {
+  t.plan(2)
   const state = validatedForm.init()
-  assert(state.validators.includedIn(1, [1,1,1]))
-  assert(!state.validators.includedIn(3, [1,1,1]))
+  t.ok(state.validators.includedIn(1, [1,1,1]))
+  t.ok(!state.validators.includedIn(3, [1,1,1]))
 })
 
 

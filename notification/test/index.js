@@ -1,4 +1,4 @@
-const assert = require('assert')
+const test = require('tape')
 const R = require("ramda")
 const flyd = require("flyd")
 const render = require('../../render')
@@ -23,33 +23,35 @@ function initNotification(state) {
   return streams
 }
 
-suite('notification')
-
-test('it sets text content on a new notification message', () => {
+test('it sets text content on a new notification message', t => {
+  t.plan(1)
   const streams = initNotification()
   streams.state.message$('hi!')
   const msg = streams.dom$().querySelector('[data-ff-notification]').textContent
-  assert.equal(msg, 'hi!')
+  t.equal(msg, 'hi!')
 })
 
-test('it sets "hidden" state without a notification message', () => {
+test('it sets "hidden" state without a notification message', t => {
+  t.plan(1)
   const streams = initNotification()
   const state = streams.dom$().querySelector('[data-ff-notification]').getAttribute('data-ff-notification')
-  assert.equal(state, 'hidden')
+  t.equal(state, 'hidden')
 })
 
-test('it sets "shown" state on a new notification message', () => {
+test('it sets "shown" state on a new notification message', t => {
+  t.plan(1)
   const streams = initNotification()
   streams.state.message$('hi!')
   const state = streams.dom$().querySelector('[data-ff-notification]').getAttribute('data-ff-notification')
-  assert.equal(state, 'shown')
+  t.equal(state, 'shown')
 })
 
-test('it removes notification after a ms delay', done => {
+test('it removes notification after a ms delay', t => {
+  t.plan(2)
   const streams = initNotification({hideDelay: 100})
   streams.state.message$('hi!')
-  assert.equal(streams.dom$().querySelector('[data-ff-notification]').textContent, 'hi!')
+  t.equal(streams.dom$().querySelector('[data-ff-notification]').textContent, 'hi!')
   setTimeout(
-    ts => { assert.equal(streams.dom$().querySelector('[data-ff-notification]').textContent, ''); done() }
+    ts => { t.equal(streams.dom$().querySelector('[data-ff-notification]').textContent, '') }
   , 100)
 })

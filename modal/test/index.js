@@ -1,4 +1,4 @@
-const assert = require('assert')
+const test = require('tape')
 const R = require("ramda")
 const flyd = require("flyd")
 const render = require('flimflam-render')
@@ -44,57 +44,61 @@ function initModals(state) {
   return streams
 }
 
-suite('modal')
-
-test('it sets shown state when id matches id stream', () => {
+test('it sets shown state when id matches id stream', t => {
+  t.plan(2)
   const streams = initModals()
 
   streams.state.modal1.id$('modal1')
   const el1 = streams.dom$().querySelector('[data-ff-modal]').getAttribute('data-ff-modal')
-  assert.strictEqual(el1, 'shown')
+  t.strictEqual(el1, 'shown')
 
   streams.state.modal1.id$('modal2')
   const el2 = streams.dom$().querySelectorAll('[data-ff-modal]')[1].getAttribute('data-ff-modal')
-  assert.strictEqual(el2, 'shown')
+  t.strictEqual(el2, 'shown')
 })
 
-test('it sets hidden state when id does not match id stream', () => {
+test('it sets hidden state when id does not match id stream', t => {
+  t.plan(2)
   const streams = initModals()
 
   streams.state.modal1.id$('modal1')
   const el2 = streams.dom$().querySelectorAll('[data-ff-modal]')[1].getAttribute('data-ff-modal')
-  assert.strictEqual(el2, 'hidden')
+  t.strictEqual(el2, 'hidden')
 
   streams.state.modal1.id$('modal2')
   const el1 = streams.dom$().querySelector('[data-ff-modal]').getAttribute('data-ff-modal')
-  assert.strictEqual(el1, 'hidden')
+  t.strictEqual(el1, 'hidden')
 })
 
-test('it pushes null to the id stream when backdrop is clicked', () => {
+test('it pushes null to the id stream when backdrop is clicked', t => {
+  t.plan(2)
   const streams = initModals()
   streams.state.modal1.id$('modal1')
-  assert.equal(streams.state.modal1.id$(), 'modal1')
+  t.equal(streams.state.modal1.id$(), 'modal1')
   streams.dom$().querySelector('[data-ff-modal-backdrop]').click()
-  assert.equal(streams.state.modal1.id$(), null)
+  t.equal(streams.state.modal1.id$(), null)
 })
 
-test('it does not close on non-closeable modals when the backdrop is clicked', ()=> {
+test('it does not close on non-closeable modals when the backdrop is clicked', t => {
+  t.plan(2)
   const streams = initModals()
   streams.state.modal2.id$('modal2')
-  assert.equal(streams.state.modal2.id$(), 'modal2')
+  t.equal(streams.state.modal2.id$(), 'modal2')
   streams.dom$().querySelectorAll('[data-ff-modal-backdrop]')[1].click()
-  assert.equal(streams.state.modal2.id$(), 'modal2')
+  t.equal(streams.state.modal2.id$(), 'modal2')
 })
 
-test('it pushes null to the id stream when close button is clicked', () => {
+test('it pushes null to the id stream when close button is clicked', t => {
+  t.plan(2)
   const streams = initModals()
   streams.state.modal1.id$('modal1')
-  assert.equal(streams.state.modal1.id$(), 'modal1')
+  t.equal(streams.state.modal1.id$(), 'modal1')
   streams.dom$().querySelector('[data-ff-modal-close-button]').click()
-  assert.equal(streams.state.modal1.id$(), null)
+  t.equal(streams.state.modal1.id$(), null)
 })
 
-test('it vertically centers', () => {
+test('it vertically centers', t => {
+  t.plan(1)
   const id$ = flyd.stream()
   const state = {
     id$: flyd.stream('flimflam')
@@ -110,6 +114,6 @@ test('it vertically centers', () => {
 
   const streams = render({state, view, patch, container})
   const body = streams.dom$().querySelector('[data-ff-modal-body]')
-  assert(body.offsetHeight > 0)
+  t.ok(body.offsetHeight > 0)
 })
 

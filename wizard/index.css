@@ -1,0 +1,44 @@
+[data-ff-wizard] {
+}
+[data-ff-wizard-body] {
+}
+[data-ff-wizard-followup] {
+}
+[data-ff-wizard-followup='incomplete'] {
+  display: none;
+}
+[data-ff-wizard-followup='complete'] {
+  display: block;
+}
+[data-ff-wizard-index] {
+}
+[data-ff-wizard-index='complete'] {
+  display: none;
+}
+[data-ff-wizard-index='incomplete'] {
+  display: block;
+}
+[data-ff-wizard-index-label] {
+}
+[data-ff-wizard-index-label='current'] {
+}
+[data-ff-wizard-index-label='accessible'] {
+}
+[data-ff-wizard-index-label='inaccessible'] {
+}
+[data-ff-wizard-steps] {
+}
+[data-ff-wizard-steps='complete'] {
+  display: none;
+}
+[data-ff-wizard-steps='incomplete'] {
+  display: block;
+}
+[data-ff-wizard-body-step] {
+}
+[data-ff-wizard-body-step='not-current'] {
+  display: none;
+}
+[data-ff-wizard-body-step='current'] {
+  display: block;
+}

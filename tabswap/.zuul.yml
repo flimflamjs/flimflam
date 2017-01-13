@@ -1,3 +1,0 @@
-ui: mocha-qunit
-browserify:
-  - transform: babelify

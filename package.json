@@ -14,14 +14,21 @@
     "babel-preset-es2015": "6.16.0",
     "babelify": "7.3.0",
     "browserify": "13.1.0",
-    "watchify": "3.7.0",
     "budo": "9.2.1",
     "cssify": "1.0.2",
-    "mocha": "2.5.3"
+    "mocha": "2.5.3",
+    "tap-spec": "4.1.1",
+    "tape": "4.6.3",
+    "tape-run": "2.1.5",
+    "watchify": "3.7.0",
+    "zuul": "3.11.1"
   },
   "scripts": {
-    "test": "zuul --local --ui mocha-qunit -- test/index.js",
-    "watch-js": "budo demo/index.js --dir demo --live --open -- -t [babelify --presets babel-preset-es2015]"
+    "test": "browserify test/index.js | tape-run | tap-spec",
+    "build": "./build-all.sh"
+  },
+  "browserify": {
+    "transform": ["babelify", "cssify"]
   },
   "repository": {
     "type": "git",

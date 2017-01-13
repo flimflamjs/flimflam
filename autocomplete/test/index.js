@@ -2,7 +2,7 @@ import autocomplete from '../index.es6'
 import R from 'ramda'
 import snabbdom from 'snabbdom'
 import h from 'snabbdom/h'
-import assert from 'assert'
+import test from 'tape'
 import render from '../../render'
 
 import '../index.css'
@@ -27,8 +27,9 @@ function init() {
   return streams
 }
 
-test('test', ()=> {
+test('test', t=> {
+  t.plan(1)
   const streams = init()
   document.body.appendChild(streams.container)
-  assert.equal(0,0)
+  t.equal(0,0)
 })

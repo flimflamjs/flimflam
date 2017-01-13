@@ -31,7 +31,9 @@ const init = state => {
 const view = state => {
   let stepNames  = R.map(R.prop('name'), state.steps)
   let stepBodies = R.map(R.prop('body'), state.steps)
-  return h('div.ff-wizard-body', [
+  return h('div', {
+    attrs: {'data-ff-wizard-body': state.isCompleted$() ? 'complete' : 'incomplete'}
+  }, [
     stepIndex(state, stepNames)
   , body(state, stepBodies)
   , followup(state, state.followup)
@@ -39,26 +41,28 @@ const view = state => {
 }
 
 const followup = (state, content) =>
-  h('div.ff-wizard-followup', {
-    style: {display: state.isCompleted$() ? 'block' : 'none'}
+  h('div', {
+    attrs: {'data-ff-wizard-followup': state.isCompleted$() ? 'complete' : 'incomplete'}
   }, [content])
 
 
 const stepIndex = (state, stepNames) => {
   let width = 100 / stepNames.length + '%'
   let stepHeaders = mapIndex(stepHeader(state, width), stepNames)
-  return h('div.ff-wizard-index', { 
-    style: { display: state.isCompleted$() ? 'none' : 'block' } 
+  return h('div', { 
+    attrs: {'data-ff-wizard-index': state.isCompleted$() ? 'complete' : 'incomplete'}
   }, stepHeaders)
 }
 
 // A step label/header thing to go in the step index/listing
 const stepHeader = (state, width) => (name, idx) => 
-  h('span.ff-wizard-index-label', {
+  h('span', {
     style: {width: width}
-  , class: {
-      'ff-wizard-index-label--current':    state.currentStep$() === idx
-    , 'ff-wizard-index-label--accessible': state.currentStep$() > idx
+  , attrs: {
+      'data-ff-wizard-index-label': 
+        state.currentStep$() === idx ? 'current'
+        : state.currentStep$() > idx ? 'accessible'
+        : 'inaccessible'
     }
   , on: {click: ev => state.jump$([idx, state.currentStep$()])}
   }, name)
@@ -66,14 +70,14 @@ const stepHeader = (state, width) => (name, idx) =>
 
 const body = (state, stepBodies) => {
   let bodies = mapIndex(stepBody(state), stepBodies)
-  return h('div.ff-wizard-steps', {
-    style: {display: state.isCompleted$() ? 'none' : 'block'}
+  return h('div', {
+    attrs: {'data-ff-wizard-steps': state.isCompleted$() ? 'complete' : 'incomplete' }
   }, bodies)
 }
 
 const stepBody = state => (content, idx) =>
-  h('div.ff-wizard-body-step', {
-    style: { display: state.currentStep$() === idx ? 'block' : 'none' }
+  h('div', {
+    attrs: {'data-ff-wizard-body-step': state.currentStep$() === idx ? 'current' : 'not-current'}
   }, [content])
 
 module.exports = {view, init}
