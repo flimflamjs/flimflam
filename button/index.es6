@@ -1,3 +1,4 @@
+import R from 'ramda'
 import h from 'snabbdom/h'
 import flyd from 'flyd'
 
@@ -8,18 +9,26 @@ import flyd from 'flyd'
 //   error$: (optional) (string) error message that can get displayed above the button upon error
 //   loading$: (optional) (boolean) whether or not we're in a loading state
 
-export default function view(state) {
-  state.error$ = state.error$ || flyd.stream()
-  state.loading$ = state.loading$ || flyd.stream()
-	return h('div.ff-buttonWrapper', {
-    class: { 'ff-buttonWrapper--hasError': state.error$() }
+module.exports = state => {
+  // Set defaults
+  state = R.merge({
+    loadingText: 'Saving...'
+  , buttonText: 'Submit'
+  , error$: flyd.stream()
+  , loading$: flyd.stream()
+  }, state)
+
+	return h('div', {
+    attrs: {'data-ff-button-wrapper': state.error$() ? 'error' : ''}
   }, [
-		h('p.ff-button-error', {style: {display: state.error$() ? 'block' : 'none'}} , state.error$())
-  , h('button.ff-button', { 
+		h('p', {
+      attrs: {'data-ff-button-error': state.error$() ? 'error' : ''}
+    }, state.error$())
+  , h('button', { 
       props: { type: 'submit', disabled: state.loading$() }
-    , class: { 'ff-button--loading': state.loading$() }
+    , attrs: {'data-ff-button': state.loading$() ? 'loading' : ''}
     }, [
-      state.loading$() ? (state.loadingText || " Saving...") : (state.buttonText || "Submit")
+      state.loading$() ? state.loadingText : state.buttonText
 		])
 	])
 }

@@ -1,0 +1,20 @@
+[data-ff-button] {
+}
+/* Button is in the loading state and is disabled */
+[data-ff-button='loading'] {
+}
+/* Button is not loading */
+[data-ff-button=''] {
+}
+[data-ff-button-wrapper] {
+}
+[data-ff-button-wrapper='error'] {
+}
+[data-ff-button-error] {
+}
+/* error message element has non-empty terror text */
+[data-ff-button-error='error'] {
+}
+/* error message element has no error text */
+[data-ff-button-error=''] {
+}

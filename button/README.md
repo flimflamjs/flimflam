@@ -20,3 +20,10 @@ When an error message is present on the error stream, then the error will be sho
 
 When the loading stream has any truthy value on it, then the button is disabled and its loading text is shown. When the loading stream has any falsey value on it, then the button is re-enabled and the normal text shown.
 
+# styling
+
+See `./index.css` for example CSS selectors you can use. `./index.css` is a basic utility theme and can be included with `postcss-import` by doing `@import 'ff-core/button/index.css';`.
+
+# events
+
+This button is intended to be used as a form submit button, so put it in a form and capture the submit events on the form.

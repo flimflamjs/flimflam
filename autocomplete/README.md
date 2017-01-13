@@ -28,3 +28,7 @@ Pass in a text field vnode (an `<input>` with type 'text' or a `<textarea>`) and
 ### examples
 
 see /demo/autocomplete/index.js to see a working example.
+
+# styling
+
+See `./index.css` for example CSS selectors you can use on this component. `./index.css` is a basic utility theme and can be included with `postcss-import` by doing `@import 'ff-core/autocomplete/index.css';`.
