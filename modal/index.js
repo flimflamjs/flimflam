@@ -21,13 +21,13 @@ function view(state) {
   } else {
     hook = { insert: addResizeListener(state), postpatch: verticallyCenter(state) };
   }
-  return (0, _h2.default)('div.ff-modalBackdrop', { // shaded overlay around modal
-    class: { 'ff-modalBackdrop--inView': state.id$() === state.thisID },
-    on: { click: closeIfOnBackdrop(state.id$, state.notCloseable) }
-  }, [(0, _h2.default)('div.ff-modal', {
+  return (0, _h2.default)('div', { // shaded overlay around modal
+    on: { click: closeIfOnBackdrop(state.id$, state.notCloseable) },
+    attrs: { 'data-ff-modal-backdrop': state.id$() === state.thisID ? 'shown' : 'hidden' }
+  }, [(0, _h2.default)('div', {
     hook: hook,
     props: { id: state.thisID },
-    class: { 'ff-modal--inView': state.id$() === state.thisID }
+    attrs: { 'data-ff-modal': state.id$() === state.thisID ? 'shown' : 'hidden' }
   }, [state.notCloseable ? '' : closeBtn(state.id$), state.title ? header(state) : '', body(state), state.footer ? footer(state) : ''])]);
 }
 
@@ -40,10 +40,10 @@ var verticallyCenter = function verticallyCenter(state) {
     top = top < margin ? margin : top;
     node.style.top = top + 'px';
 
-    var bodyElm = node.querySelector('.ff-modal-body');
-    var footerElm = node.querySelector('.ff-modal-footer');
+    var bodyElm = node.querySelector('[data-ff-modal-body]');
+    var footerElm = node.querySelector('[data-ff-modal-footer]');
     var footerHeight = footerElm ? footerElm.offsetHeight : 0;
-    var headerElm = node.querySelector('.ff-modal-header');
+    var headerElm = node.querySelector('[data-ff-modal-header]');
     var headerHeight = headerElm ? headerElm.offsetHeight : 0;
     var bodyHeight = windowHeight - margin * 2 - footerHeight - headerHeight;
     var scrollHeight = bodyElm.scrollHeight;
@@ -64,27 +64,27 @@ var closeIfOnBackdrop = function closeIfOnBackdrop(id$, notCloseable) {
   return function (ev) {
     if (notCloseable) return;
     var className = ev.target.className;
-    if (className.indexOf('ff-modalBackdrop') === -1 && className.indexOf('ff-modal-container') === -1) {
-      return;
-    }
-    id$(null); // close modal
+    // If not clicking the backdrop, don't close the modal, just return early
+    if (!ev.target.hasAttribute('data-ff-modal-backdrop')) return;
+    // Else close the modal
+    id$(null);
   };
 };
 
 var header = function header(state) {
-  return (0, _h2.default)('div.ff-modal-header', [(0, _h2.default)('h4', [state.title])]);
+  return (0, _h2.default)('div', { attrs: { 'data-ff-modal-header': '' } }, [(0, _h2.default)('h4', [state.title])]);
 };
 
 var body = function body(state) {
-  return (0, _h2.default)('div.ff-modal-body', state.body.constructor === Array ? state.body : [state.body]);
+  return (0, _h2.default)('div', { attrs: { 'data-ff-modal-body': '' } }, state.body.constructor === Array ? state.body : [state.body]);
 };
 
 var closeBtn = function closeBtn(id$) {
-  return (0, _h2.default)('a.ff-modal-closeButton', { on: { click: [id$, null] }, props: { innerHTML: '&times;' } });
+  return (0, _h2.default)('a', { attrs: { 'data-ff-modal-close-button': '' }, on: { click: [id$, null] } });
 };
 
 var footer = function footer(state) {
-  return (0, _h2.default)('div.ff-modal-footer', state.footer.constructor === Array ? state.footer : [state.footer]);
+  return (0, _h2.default)('div', { attrs: { 'data-ff-modal-footer': '' } }, state.footer.constructor === Array ? state.footer : [state.footer]);
 };
 
 module.exports = view;

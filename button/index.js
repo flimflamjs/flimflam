@@ -1,5 +1,9 @@
 'use strict';
 
+var _ramda = require('ramda');
+
+var _ramda2 = _interopRequireDefault(_ramda);
+
 var _h = require('snabbdom/h');
 
 var _h2 = _interopRequireDefault(_h);
@@ -19,7 +23,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 module.exports = function (state) {
   // Set defaults
-  state = R.merge({
+  state = _ramda2.default.merge({
     loadingText: 'Saving...',
     buttonText: 'Submit',
     error$: _flyd2.default.stream(),

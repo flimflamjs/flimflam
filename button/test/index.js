@@ -1,39 +1,47 @@
-import flyd from 'flyd'
-import button from '../index.es6'
-import R from 'ramda'
-import snabbdom from 'snabbdom'
-import h from 'snabbdom/h'
 import assert from 'assert'
+import R from 'ramda'
+import flyd from 'flyd'
 import render from '../../render'
-
-import '../index.css'
+import h from 'snabbdom/h'
+import snabbdom from 'snabbdom'
+import button from '../index.es6'
 
 const patch = snabbdom.init([
-  require("snabbdom/modules/class")
-, require("snabbdom/modules/style")
-, require("snabbdom/modules/props")
-, require("snabbdom/modules/eventlisteners")
-, require("snabbdom/modules/attributes")
+  require('snabbdom/modules/class')
+, require('snabbdom/modules/props')
+, require('snabbdom/modules/style')
+, require('snabbdom/modules/eventlisteners')
+, require('snabbdom/modules/attributes')
 ])
 
-function init() {
-  const container = document.createElement('div')
-  const state = {loading$: flyd.stream(false)}
-  const view = state => h('div', [
-    h('form', {
-      on: {submit: [state.loading$, true]}
-    }, [
-      button({loading$: state.loading$})
-    ])
-  ])
-  const streams = render({container, view, state, patch})
-  streams.container = container
+
+function initButton(state) {
+  state = R.merge({
+    loading$: flyd.stream()
+  , error$: flyd.stream()
+  , buttonText: 'Submit'
+  , loadingText: 'Thinking...'
+  }, state || {})
+
+  let container = document.createElement('div')
+  let streams = render({state, view: button, patch, container})
   streams.state = state
   return streams
 }
 
-test('test', ()=> {
-  const streams = init()
-  document.body.appendChild(streams.container)
-  assert.equal(0,0)
+suite('button')
+
+test('setting loading true disables the button', () => {
+  const streams = initButton()
+  streams.state.loading$(true)
+  const btn = streams.dom$().querySelector('[data-ff-button]')
+  assert.equal(btn.disabled, true)
 })
+
+test('setting loading true displays loading text', () => {
+  const streams = initButton()
+  streams.state.loading$(true)
+  const btn = streams.dom$().querySelector('[data-ff-button]')
+  assert.equal(btn.textContent, 'Thinking...')
+})
+

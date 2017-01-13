@@ -1,5 +1,4 @@
-
-.ff-modal {
+[data-ff-modal] {
   position: fixed;
   width: 500px;
   margin-left: -250px;
@@ -9,16 +8,16 @@
   display: none;
 }
 
-.ff-modal-header,
-.ff-modal-footer {
+[data-ff-modal-header],
+[data-ff-modal-footer] {
   overflow: hidden;
 }
 
-.ff-modal.ff-modal--inView {
+[data-ff-modal='shown'] {
   display: block;
 }
 
-.ff-modalBackdrop {
+[data-ff-modal-backdrop] {
   position: fixed;
   height: 100%;
   width: 100%;
@@ -29,18 +28,18 @@
   display: none;
 }
 
-.ff-modalBackdrop.ff-modalBackdrop--inView {
+[data-ff-modal-backdrop='shown'] {
   display: block;
 }
 
-.ff-modal-closeButton {
+[data-ff-modal-close-button] {
   position: absolute;
   top: 10px;
   right: 10px;
   cursor: pointer;
 }
 
-.ff-modal-body {
+[data-ff-modal-body] {
   overflow: auto;
 }
 

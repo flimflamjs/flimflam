@@ -1,19 +1,19 @@
-var assert = require('assert')
-var R = require("ramda")
-var flyd = require("flyd")
-var render = require('flimflam-render')
-var h = require('snabbdom/h')
-var snabbdom =require('snabbdom')
-var patch = snabbdom.init([ // Init patch function with choosen modules
+const assert = require('assert')
+const R = require("ramda")
+const flyd = require("flyd")
+const render = require('flimflam-render')
+const h = require('snabbdom/h')
+const snabbdom =require('snabbdom')
+const patch = snabbdom.init([ // Init patch function with choosen modules
   require('snabbdom/modules/class') // makes it easy to toggle classes
 , require('snabbdom/modules/props') // for setting properties on DOM elements
 , require('snabbdom/modules/style') // handles styling on elements with support for animations
 , require('snabbdom/modules/eventlisteners') // attaches event listeners
+, require('snabbdom/modules/attributes') // attaches event listeners
 ])
 
-var css = require('../../modal/index.css')
-
-var modal = require('../../modal')
+import '../index.css'
+import modal from '../index.es6'
 
 function initModals(state) {
   const id$ = flyd.stream()
@@ -38,73 +38,78 @@ function initModals(state) {
     modal(state.modal1)
   , modal(state.modal2)
   ])
-  let container = document.createElement('div')
-  let streams = render({state, view, patch, container})
+  const container = document.createElement('div')
+  const streams = render({state, view, patch, container})
   streams.state = state
   return streams
 }
 
 suite('modal')
 
-test('it sets inView class when id matches id stream', () => {
-  var streams = initModals()
+test('it sets shown state when id matches id stream', () => {
+  const streams = initModals()
+
   streams.state.modal1.id$('modal1')
-  var el = streams.dom$().querySelectorAll('.ff-modal')[0]
-  assert(R.contains('ff-modal--inView', el.className))
+  const el1 = streams.dom$().querySelector('[data-ff-modal]').getAttribute('data-ff-modal')
+  assert.strictEqual(el1, 'shown')
+
   streams.state.modal1.id$('modal2')
-  var el = streams.dom$().querySelectorAll('.ff-modal')[1]
-  assert(R.contains('ff-modal--inView', el.className))
+  const el2 = streams.dom$().querySelectorAll('[data-ff-modal]')[1].getAttribute('data-ff-modal')
+  assert.strictEqual(el2, 'shown')
 })
 
-test('it removes inView class when id does not match id stream', () => {
-  var streams = initModals()
+test('it sets hidden state when id does not match id stream', () => {
+  const streams = initModals()
+
   streams.state.modal1.id$('modal1')
-  var el = streams.dom$().querySelectorAll('.ff-modal')[1]
-  assert(!R.contains('ff-modal--inView', el.className))
+  const el2 = streams.dom$().querySelectorAll('[data-ff-modal]')[1].getAttribute('data-ff-modal')
+  assert.strictEqual(el2, 'hidden')
+
   streams.state.modal1.id$('modal2')
-  var el = streams.dom$().querySelectorAll('.ff-modal')[0]
-  assert(!R.contains('ff-modal--inView', el.className))
+  const el1 = streams.dom$().querySelector('[data-ff-modal]').getAttribute('data-ff-modal')
+  assert.strictEqual(el1, 'hidden')
 })
 
 test('it pushes null to the id stream when backdrop is clicked', () => {
-  var streams = initModals()
+  const streams = initModals()
   streams.state.modal1.id$('modal1')
   assert.equal(streams.state.modal1.id$(), 'modal1')
-  streams.dom$().querySelector('.ff-modalBackdrop').click()
+  streams.dom$().querySelector('[data-ff-modal-backdrop]').click()
   assert.equal(streams.state.modal1.id$(), null)
 })
 
 test('it does not close on non-closeable modals when the backdrop is clicked', ()=> {
-  var streams = initModals()
+  const streams = initModals()
   streams.state.modal2.id$('modal2')
   assert.equal(streams.state.modal2.id$(), 'modal2')
-  streams.dom$().querySelectorAll('.ff-modalBackdrop')[1].click()
+  streams.dom$().querySelectorAll('[data-ff-modal-backdrop]')[1].click()
   assert.equal(streams.state.modal2.id$(), 'modal2')
 })
 
 test('it pushes null to the id stream when close button is clicked', () => {
-  var streams = initModals()
+  const streams = initModals()
   streams.state.modal1.id$('modal1')
   assert.equal(streams.state.modal1.id$(), 'modal1')
-  streams.dom$().querySelector('.ff-modal-closeButton').click()
+  streams.dom$().querySelector('[data-ff-modal-close-button]').click()
   assert.equal(streams.state.modal1.id$(), null)
 })
 
 test('it vertically centers', () => {
   const id$ = flyd.stream()
-  let state = {
-    id$: flyd.stream('filmflam')
-  , thisID: 'filmflam'
+  const state = {
+    id$: flyd.stream('flimflam')
+  , thisID: 'flimflam'
   , title: 'Title Goes Here'
   , body: "Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there "
   , footer: 'what!'
   }
 
   const view = state => h('div', [ modal(state) ])
-  let container = document.createElement('div')
+  const container = document.createElement('div')
   document.body.appendChild(container)
 
-  let streams = render({state, view, patch, container})
-  assert(streams.dom$().querySelector('.ff-modal-body').offsetHeight > 0)
+  const streams = render({state, view, patch, container})
+  const body = streams.dom$().querySelector('[data-ff-modal-body]')
+  assert(body.offsetHeight > 0)
 })
 
