@@ -1,0 +1,4 @@
+ui: mocha-qunit
+browserify:
+  - transform: babelify
+  - transform: cssify

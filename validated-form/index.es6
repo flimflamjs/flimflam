@@ -106,10 +106,13 @@ const field = R.curry((state, elm) => {
   , class: { 'ff-field-input--invalid': invalid }
   })
 
-  return h('div.ff-field', {
-    class: {'ff-field--invalid': invalid}
+  return h('div', {
+    attrs: {'data-ff-field': invalid ? 'invalid' : 'valid'}
   }, [
-    invalid ? h('p.ff-field-errorMessage', { hook: {insert: scrollToThis} }, err) : ''
+    invalid ? h('p', {
+      hook: {insert: scrollToThis} 
+    , attrs: {'data-ff-field-error': err}
+    }, err) : ''
   , elm
   ])
 })
