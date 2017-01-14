@@ -19,8 +19,11 @@
   display: block;
 }
 [data-ff-wizard-index-label] {
+  padding: 1em 2em;
+  display: inline-block;
 }
 [data-ff-wizard-index-label='current'] {
+  font-weight: bold;
 }
 [data-ff-wizard-index-label='accessible'] {
 }
