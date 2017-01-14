@@ -1,0 +1,20 @@
+[data-ff-tabswap] {
+}
+[data-ff-tabswap-label] {
+  cursor: pointer;
+  display: inline-block;
+  padding: 1em 2em;
+}
+[data-ff-tabswap-label='active'] {
+  font-weight: bold;
+}
+[data-ff-tabswap-label='inactive'] {
+}
+[data-ff-tabswap-content] {
+}
+[data-ff-tabswap-content='active'] {
+  display: block;
+}
+[data-ff-tabswap-content='inactive'] {
+  display: none;
+}
