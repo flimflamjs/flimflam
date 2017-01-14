@@ -33,14 +33,15 @@ function initForm(state) {
   return streams
 }
 
-test('sets invalid class when the field does not satisfy contraints', t => {
+test('sets invalid state when the field does not satisfy contraints', t => {
   t.plan(1)
   const streams = initForm({ constraints: {email: {email: true, required: true}} })
   const change = new Event('change')
   const input = streams.dom$().querySelector('input')
   input.value = 'xyz'
   input.dispatchEvent(change)
-  t.ok(R.contains('invalid', input.className))
+  const state = input.getAttribute('data-ff-field-input')
+  t.equal(state, 'invalid')
 })
 
 test('it appends an error message when the field is invalid', t => {
@@ -55,15 +56,18 @@ test('it appends an error message when the field is invalid', t => {
 })
 
 test("it clears a field's error message on focus", t => {
-  t.plan(1)
+  t.plan(2)
   const streams = initForm({ constraints: {email: {email: true, required: true}} })
   const change = new Event('change')
   const input = streams.dom$().querySelector('input')
   input.value = 'xyz'
   input.dispatchEvent(change)
+  const state1= input.getAttribute('data-ff-field-input')
+  t.equal(state1, 'invalid')
   const focus = new Event('focus')
   input.dispatchEvent(focus)
-  t.ok(!R.contains('invalid', input.className))
+  const state2 = input.getAttribute('data-ff-field-input')
+  t.equal(state2, 'valid')
 })
 
 test("it finds the first error on submit", t => {
@@ -84,7 +88,8 @@ test('it does not invalidate blank fields that are not required on change', t =>
   const change = new Event('change')
   const input = streams.dom$().querySelector('input')
   input.dispatchEvent(change)
-  t.ok(!R.contains('invalid', input.className))
+  const state = input.getAttribute('data-ff-field-input')
+  t.equal(state, 'valid')
 })
 test('it does not invalidate blank fields that are not required on submit', t => {
   t.plan(1)
@@ -93,7 +98,8 @@ test('it does not invalidate blank fields that are not required on submit', t =>
   const form = streams.dom$()
   const input = streams.dom$().querySelector('input')
   form.dispatchEvent(submit)
-  t.ok(!R.contains('invalid', input.className))
+  const state = input.getAttribute('data-ff-field-input')
+  t.equal(state, 'valid')
 })
 
 test('it gives data hash on valid submit', t => {

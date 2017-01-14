@@ -1,0 +1,14 @@
+[data-ff-field] {
+}
+[data-ff-field-input] {
+}
+[data-ff-field-input='valid'] {
+}
+[data-ff-field-input='invalid'] {
+}
+[data-ff-field-error] {
+}
+[data-ff-field-error='empty'] {
+}
+[data-ff-field-error='nonempty'] {
+}

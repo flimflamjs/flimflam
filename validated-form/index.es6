@@ -103,7 +103,7 @@ const field = R.curry((state, elm) => {
       focus: state.focus$
     , change: ev => state.change$(ev.currentTarget)
     }
-  , class: { 'ff-field-input--invalid': invalid }
+  , attrs: {'data-ff-field-input': invalid ? 'invalid' : 'valid'}
   })
 
   return h('div', {
@@ -111,7 +111,7 @@ const field = R.curry((state, elm) => {
   }, [
     invalid ? h('p', {
       hook: {insert: scrollToThis} 
-    , attrs: {'data-ff-field-error': err}
+    , attrs: {'data-ff-field-error': invalid ? 'nonempty' : 'empty'}
     }, err) : ''
   , elm
   ])

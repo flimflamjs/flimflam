@@ -144,14 +144,14 @@ var field = _ramda2.default.curry(function (state, elm) {
         return state.change$(ev.currentTarget);
       }
     },
-    class: { 'ff-field-input--invalid': invalid }
+    attrs: { 'data-ff-field-input': invalid ? 'invalid' : 'valid' }
   });
 
   return (0, _h2.default)('div', {
     attrs: { 'data-ff-field': invalid ? 'invalid' : 'valid' }
   }, [invalid ? (0, _h2.default)('p', {
     hook: { insert: scrollToThis },
-    attrs: { 'data-ff-field-error': err }
+    attrs: { 'data-ff-field-error': invalid ? 'nonempty' : 'empty' }
   }, err) : '', elm]);
 });
 
