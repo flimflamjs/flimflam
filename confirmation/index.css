@@ -1,0 +1,17 @@
+@import '../modal/index.css';
+[data-ff-confirmation] {
+}
+[data-ff-confirmation='shown'] {
+}
+[data-ff-confirmation='hidden'] {
+}
+[data-ff-confirmation-body] {
+}
+[data-ff-confirmation-prompt] {
+}
+[data-ff-confirmation-button] {
+}
+[data-ff-confirmation-button='yes'] {
+}
+[data-ff-confirmation-button='no'] {
+}
