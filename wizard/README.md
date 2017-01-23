@@ -12,29 +12,24 @@ Initialize the wizard state and pass in some defaults:
 let myWizardState = wizard.init({
   currentStep$: flyd.stream(0)        // Stream of current steps -- starts at 0
 , isCompleted$: flyd.stream(false)    // stream of Booleans, marking whether the wizard is completed
-, steps: [{name: 'Step 1', body: h('div', 'Step 1 body')}] // Pass in array of step objects 
 , followup: h('div', 'My followup content') // Content to show in the wizard when isCompleted$ has a true value
 })
 ```
 
-The `steps` property is an array of object. Each step object has a `name` and a `body`. The step name will be displayed in the wizard header.
+
+### wizard.view(state, steps, followup)
+
+The `steps` parameter is an array of objects for each wizard step. Each object has a `name` and a `body`. The step name will be displayed in the wizard header.
+
+The `followup` parameter is an optional snabbdom node that contains some content for when the user completes the wizard.
 
 ```js
-[
-  { name: 'Your Info' , body: infoForm }
-, { name: 'Login Info' , body: signupForm }
-]
-```
-
-### wizard.view(state)
-
-Generate some wizard markup, passing in a wizard state object. You may want to pass in the `steps`/`followup` snabbdom at this point:
-
-```js
-wizard.view(R.merge(state.myWizard, {
-  steps: step_array_from_view
-, followup: followup_content_from_view
-})
+  const view = state =>
+    wizard.view(
+      state.wizard
+    , [{name: 'Step 1', body: h('div', 'Step 1 body')}] // Pass in array of step objects 
+    , h('p', 'You have completed the wizard!')
+    )
 ```
 
 

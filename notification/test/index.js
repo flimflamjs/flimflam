@@ -1,16 +1,7 @@
 const test = require('tape')
-const R = require("ramda")
 const flyd = require("flyd")
-const render = require('../../render')
+const render = require('flimflam-render')
 const h = require('snabbdom/h')
-const snabbdom =require('snabbdom')
-const patch = snabbdom.init([ // Init patch function with choosen modules
-  require('snabbdom/modules/class') // makes it easy to toggle classes
-, require('snabbdom/modules/props') // for setting properties on DOM elements
-, require('snabbdom/modules/style') // handles styling on elements with support for animations
-, require('snabbdom/modules/eventlisteners') // attaches event listeners
-, require('snabbdom/modules/attributes') // attaches event listeners
-])
 
 const notification = require('../index.es6')
 
@@ -18,7 +9,7 @@ function initNotification(state) {
   state = notification.init(state)
   const container = document.createElement('div')
   const view = state => h('div', [ notification.view(state) ])
-  const streams = render({patch, state, view, container})
+  const streams = render(view, state, container)
   streams.state = state
   return streams
 }

@@ -12,8 +12,6 @@ const init = state => {
     currentStep$: flyd.stream(0)
   , jump$: flyd.stream() // Stream of step jumps: pairs of [destinationStep, currentStep]
   , isCompleted$: flyd.stream(false) // Is the wizard completed?
-  , steps: [] // Snabbdom content of each step
-  , followup: '' // Snabbdom content of ending step, when the wizard is complete
   }, state || {})
   
   // Stream of valid jump step indexes -- can only jump backwards
@@ -25,22 +23,21 @@ const init = state => {
   return state
 }
 
-// state has a steps array and followup object
 // each step object has a name and body
 // followup is just snabbdom content
-const view = state => {
-  let stepNames  = R.map(R.prop('name'), state.steps)
-  let stepBodies = R.map(R.prop('body'), state.steps)
+const view = (state, steps, followup) => {
+  let stepNames  = R.map(R.prop('name'), steps)
+  let stepBodies = R.map(R.prop('body'), steps)
   return h('div', {
     attrs: {'data-ff-wizard-body': state.isCompleted$() ? 'complete' : 'incomplete'}
   }, [
     stepIndex(state, stepNames)
   , body(state, stepBodies)
-  , followup(state, state.followup)
+  , followupDiv(state, followup || '')
   ])
 }
 
-const followup = (state, content) =>
+const followupDiv = (state, content) =>
   h('div', {
     attrs: {'data-ff-wizard-followup': state.isCompleted$() ? 'complete' : 'incomplete'}
   }, [content])

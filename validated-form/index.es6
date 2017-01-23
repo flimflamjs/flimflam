@@ -1,14 +1,15 @@
-import R from 'ramda'
-import flyd from 'flyd'
-import h from 'snabbdom/h'
-import serializeForm from 'form-serialize'
+const R = require('ramda')
+const h = require('snabbdom/h')
+const serializeForm  = require('form-serialize')
+
+const flyd  = require('flyd')
 flyd.filter = require('flyd/module/filter')
 flyd.mergeAll = require('flyd/module/mergeall')
 flyd.sampleOn = require('flyd/module/sampleon')
 flyd.scanMerge = require('flyd/module/scanmerge')
 
-import emailRegex from './email-regex.es6'
-import currencyRegex from './currency-regex.es6'
+const emailRegex = require('./email-regex')
+const currencyRegex = require('./currency-regex')
 
 // constraints: a hash of key/vals where each key is the name of an input
 // and each value is an object of validator names and arguments
@@ -17,9 +18,10 @@ import currencyRegex from './currency-regex.es6'
 //
 // messages: a hash of validator names and field names mapped to error messages 
 //
-// messages match on the most specific thing in the messages hash
-// - first checks if there is an exact match on field name
-// - then checks for match on validator name
+// messages match to validation errors hierarchically:
+// - first checks if there is an exact match on both field name and validator name
+// - then checks for a match on just the field name
+// - then checks for a match on the validator name
 //
 // Given a constraint like:
 // {name: {required: true}}
@@ -29,20 +31,17 @@ import currencyRegex from './currency-regex.es6'
 // {name: 'Please enter your name'}
 // {required: 'This is required'}
 
-function init(state) {
-  state = state || {}
-  state = R.merge({
+function init(config) {
+  config = config || {}
+  let state = {
     focus$:  flyd.stream()
   , change$: flyd.stream()
   , submit$: flyd.stream()
-  , validators: {}
-  , messages: {}
-  , constraints: {}
-  } , state )
-
-  state.validators = R.merge(defaultValidators, state.validators)
-  state.messages = R.merge(defaultMessages, state.messages)
-  state.constraints = state.constraints || {}
+  , formData$: config.formData$ || flyd.stream({})
+  }
+  state.validators = R.merge(defaultValidators, config.validators || {})
+  state.messages = R.merge(defaultMessages, config.messages || {})
+  state.constraints = config.constraints || {}
 
   const fieldErr$ = flyd.map(validateField(state), state.change$)
   const submitErr$ = flyd.map(validateForm(state), state.submit$)
@@ -56,15 +55,15 @@ function init(state) {
 
   // Stream of field names and new values
   state.nameVal$ = flyd.map(node => [node.name, node.value], state.change$)
-  // Stream of all data scanned into one object
-  state.data$ = flyd.scanMerge([
+  // Stream of all user-inputted data scanned into one object
+  state.userData$ = flyd.scanMerge([
     [state.nameVal$, (data, pair) => R.assoc(pair[0], pair[1], data)]  // change sets a single key/val into data
   , [state.submit$, (data, form) => serializeForm(form, {hash: true})] // submit overrides all data by serializing the whole form
-  ], state.data || {})
+  ], state.formData$() || {})
 
   state.invalidSubmit$ = flyd.filter(R.apply((key, val) => val), submitErr$)
   state.validSubmit$ = flyd.filter(R.apply((key, val) => !val), submitErr$)
-  state.validData$ = flyd.sampleOn(state.validSubmit$, state.data$)
+  state.validData$ = flyd.sampleOn(state.validSubmit$, state.userData$)
 
   return state
 }
@@ -83,9 +82,16 @@ const errorsStream = state => {
 
 // -- Views
 
-const form = R.curry((state, elm) => {
-  elm.data = R.merge(elm.data, {
-    on: {submit: ev => {ev.preventDefault(); state.submit$(ev.currentTarget)}}
+const form = R.curryN(4, (state, sel, data={}, children=[]) => {
+  let elm = h('form', data, children)
+  elm.data = R.merge(data, {
+    on: {
+      submit: ev => {
+        if(data.on && data.on.submit) data.on.submit(ev)
+        ev.preventDefault()
+        state.submit$(ev.currentTarget)
+      }
+    }
   })
   return elm
 })
@@ -93,30 +99,33 @@ const form = R.curry((state, elm) => {
 
 // A single form field
 // Data takes normal snabbdom data for the input/select/textarea (eg props, style, on)
-const field = R.curry((state, elm) => {
-  if(!elm.data.props || !elm.data.props.name) throw new Error("You need to provide a field name for validation (using the 'props.name' property)")
-  let err = state.errors$()[elm.data.props.name]
-  let invalid = err && err.length
+const field = R.curryN(4, (state, sel, data={}, children=[]) => {
+  if(!data.props || !data.props.name) throw new Error("You need to provide a field name for validation (using the 'props.name' property)")
+  const err = state.errors$()[data.props.name]
+  const invalid = err && err.length
 
-  elm.data = R.merge(elm.data, {
+  const elm = h(sel, R.merge(data, {
     on: {
       focus: state.focus$
     , change: ev => state.change$(ev.currentTarget)
     }
+  , props: R.merge({
+      value: state.formData$()[data.props.name]
+    }, data.props)
   , attrs: {'data-ff-field-input': invalid ? 'invalid' : 'valid'}
-  })
+  }))
+
+  const errMsg = invalid
+    ? h('p', {
+        hook: {insert: scrollToThis} 
+      , attrs: {'data-ff-field-error': invalid ? 'nonempty' : 'empty'}
+      }, err)
+    : ''
 
   return h('div', {
     attrs: {'data-ff-field': invalid ? 'invalid' : 'valid'}
-  }, [
-    invalid ? h('p', {
-      hook: {insert: scrollToThis} 
-    , attrs: {'data-ff-field-error': invalid ? 'nonempty' : 'empty'}
-    }, err) : ''
-  , elm
-  ])
+  }, [errMsg, elm])
 })
-
 
 const scrollToThis = vnode => {
   vnode.elm.scrollIntoView({block: 'start', behavior: 'smooth'})
@@ -138,8 +147,8 @@ const validateField = R.curry((state, node) => {
     const arg = state.constraints[name][valName]
     if(!state.validators[valName]) {
       console.warn("Form validation constraint does not exist:", valName)
-    } else if(!state.validators[valName](value, arg)) {
-      const msg = getErr(state.messages, name, valName, arg)
+    } else if(!state.validators[valName](value, arg, state.userData$())) {
+      const msg = getErrMsg(state.messages, name, valName, arg)
       return [name, String(msg)]
     }
   }
@@ -150,15 +159,17 @@ const validateField = R.curry((state, node) => {
 // using the form data saved into the state
 const validateForm = R.curry((state, node) => {
   const formData = serializeForm(node, {hash: true})
-  for(var fieldName in state.constraints) { 
-    const value = state.data$()[fieldName]
-    if(state.constraints[fieldName] && (state.constraints[fieldName].required || ! valIsUnset(value))) { // dont validate undefined non-required fields
-      for(var valName in state.constraints[fieldName]) {
+  // For every field name in the provided contraints
+  for(const fieldName in state.constraints) { 
+    const value = state.userData$()[fieldName]
+    // Skip the validation of non-required fields that are missing
+    if(state.constraints[fieldName] && (state.constraints[fieldName].required || !valIsUnset(value))) { 
+      for(const valName in state.constraints[fieldName]) {
         const arg = state.constraints[fieldName][valName]
         if(!state.validators[valName]) {
-          console.warn("Form validation constraint does not exist:", valName)
-        } else if(!state.validators[valName](value, arg)) {
-          const msg = getErr(state.messages, fieldName, valName, arg)
+          console.warn("Form validator function does not exist:", valName)
+        } else if(!state.validators[valName](value, arg, formData)) {
+          const msg = getErrMsg(state.messages, fieldName, valName, arg)
           return [fieldName, String(msg)]
         }
       }
@@ -166,23 +177,21 @@ const validateForm = R.curry((state, node) => {
   }
 })
 
-// Given the messages object, the validator argument, the field name, and the validator name
+// Given the messages object, the field name, and the validator name, and the validator argument
 // Retrieve and apply the error message function
-const getErr = (messages, name, valName, arg) => {
-  const err = messages[name] 
-    ? messages[name][valName] || messages[name]
-    : messages[valName]
+const getErrMsg = (messages, name, valName, arg) => {
+  const err = 
+    messages[name] && messages[name][valName] ? messages[name][valName]
+  : messages[valName]                         ? messages[valName]
+  : messages[name]                            ? messages[name]
+  : messages.fallback
   if(typeof err === 'function') return err(arg)
   else return err
 }
 
-// Test for an unset value
-// Can't use just !val because we want 0 to be true
-const valIsUnset = val =>
-  val === undefined || val === '' || val === null
-
-let defaultMessages = {
-  email: 'Please enter a valid email address'
+const defaultMessages = {
+  fallback: 'This looks invalid'
+, email: 'Please enter a valid email address'
 , required: 'This field is required'
 , currency: 'Please enter valid currency'
 , format: "This doesn't look like the right format"
@@ -196,7 +205,7 @@ let defaultMessages = {
 , includedIn: arr => `This should be one of: ${arr.join(', ')}`
 }
 
-let defaultValidators = {
+const defaultValidators = {
   email: val => String(val).match(emailRegex)
 , required: val => !valIsUnset(val)
 , currency: val => String(val).match(currencyRegex)
@@ -209,7 +218,18 @@ let defaultValidators = {
 , minLength: (val, n) => val.length >= n
 , lengthEquals: (val, n) => val.length === n
 , includedIn: (val, arr) => arr.indexOf(val) !== -1
+, matches
 }
 
-module.exports = {init, field, form}
+// Does a field value match another field value, given the other's name and the full form data?
+const matches = (val, otherName, data) => {
+  const otherVal = data[otherName]
+  return val === otherVal
+}
 
+// Test for an unset value
+// Can't use just !val because we want 0 to be true
+const valIsUnset = val =>
+  val === undefined || val === '' || val === null
+
+module.exports = {init, field, form}

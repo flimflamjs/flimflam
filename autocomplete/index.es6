@@ -1,6 +1,7 @@
-import flyd from 'flyd'
-import h from 'snabbdom/h'
-import R from 'ramda'
+const h = require('snabbdom/h')
+const R = require('ramda')
+
+const flyd = require('flyd')
 flyd.filter = require('flyd/module/filter')
 flyd.scanMerge = require('flyd/module/scanmerge')
 flyd.mergeAll = require('flyd/module/mergeall')

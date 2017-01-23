@@ -1,19 +1,9 @@
-import autocomplete from '../index.es6'
-import R from 'ramda'
-import snabbdom from 'snabbdom'
-import h from 'snabbdom/h'
-import test from 'tape'
-import render from '../../render'
+const h = require('snabbdom/h')
+const test = require('tape')
+const render = require('flimflam-render')
 
-import '../index.css'
-
-const patch = snabbdom.init([
-  require("snabbdom/modules/class")
-, require("snabbdom/modules/style")
-, require("snabbdom/modules/props")
-, require("snabbdom/modules/eventlisteners")
-, require("snabbdom/modules/attributes")
-])
+const autocomplete = require('../index.es6')
+require('../index.css')
 
 function init() {
   const container = document.createElement('div')
@@ -21,7 +11,7 @@ function init() {
     autocomplete: autocomplete.init({values: ['finn','frank','filbert','finnish','french']})
   }
   const view = state => h('div', [autocomplete.view(h('input', {props: {type: 'text', name: 'test'}}), state.autocomplete)])
-  const streams = render({container, view, state, patch})
+  const streams = render(view, state, container)
   streams.container = container
   streams.state = state
   return streams

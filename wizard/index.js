@@ -25,8 +25,6 @@ var init = function init(state) {
     currentStep$: _flyd2.default.stream(0),
     jump$: _flyd2.default.stream() // Stream of step jumps: pairs of [destinationStep, currentStep]
     , isCompleted$: _flyd2.default.stream(false) // Is the wizard completed?
-    , steps: [] // Snabbdom content of each step
-    , followup: '' // Snabbdom content of ending step, when the wizard is complete
   }, state || {});
 
   // Stream of valid jump step indexes -- can only jump backwards
@@ -38,18 +36,17 @@ var init = function init(state) {
   return state;
 };
 
-// state has a steps array and followup object
 // each step object has a name and body
 // followup is just snabbdom content
-var view = function view(state) {
-  var stepNames = _ramda2.default.map(_ramda2.default.prop('name'), state.steps);
-  var stepBodies = _ramda2.default.map(_ramda2.default.prop('body'), state.steps);
+var view = function view(state, steps, followup) {
+  var stepNames = _ramda2.default.map(_ramda2.default.prop('name'), steps);
+  var stepBodies = _ramda2.default.map(_ramda2.default.prop('body'), steps);
   return (0, _h2.default)('div', {
     attrs: { 'data-ff-wizard-body': state.isCompleted$() ? 'complete' : 'incomplete' }
-  }, [stepIndex(state, stepNames), body(state, stepBodies), followup(state, state.followup)]);
+  }, [stepIndex(state, stepNames), body(state, stepBodies), followupDiv(state, followup || '')]);
 };
 
-var followup = function followup(state, content) {
+var followupDiv = function followupDiv(state, content) {
   return (0, _h2.default)('div', {
     attrs: { 'data-ff-wizard-followup': state.isCompleted$() ? 'complete' : 'incomplete' }
   }, [content]);

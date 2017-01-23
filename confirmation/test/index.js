@@ -1,18 +1,8 @@
-const R = require('ramda')
-const snabbdom = require('snabbdom')
 const flyd = require('flyd')
 const h  = require('snabbdom/h')
 const test = require('tape')
-const render = require('../../render')
+const render = require('flimflam-render')
 const confirmation = require('../index.es6')
-
-const patch = snabbdom.init([
-  require("snabbdom/modules/class")
-, require("snabbdom/modules/style")
-, require("snabbdom/modules/props")
-, require("snabbdom/modules/eventlisteners")
-, require("snabbdom/modules/attributes")
-])
 
 function initComponent() {
   const container = document.createElement('div')
@@ -28,7 +18,7 @@ function initComponent() {
     , denyText: 'noooooo'
     })
   ])
-  const streams = render({container, view, state, patch})
+  const streams = render(view, state, container)
   streams.container = container
   streams.state = state
   return streams

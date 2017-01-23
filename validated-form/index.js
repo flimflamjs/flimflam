@@ -1,46 +1,29 @@
 'use strict';
 
-var _ramda = require('ramda');
+var R = require('ramda');
+var h = require('snabbdom/h');
+var serializeForm = require('form-serialize');
 
-var _ramda2 = _interopRequireDefault(_ramda);
+var flyd = require('flyd');
+flyd.filter = require('flyd/module/filter');
+flyd.mergeAll = require('flyd/module/mergeall');
+flyd.sampleOn = require('flyd/module/sampleon');
+flyd.scanMerge = require('flyd/module/scanmerge');
 
-var _flyd = require('flyd');
-
-var _flyd2 = _interopRequireDefault(_flyd);
-
-var _h = require('snabbdom/h');
-
-var _h2 = _interopRequireDefault(_h);
-
-var _formSerialize = require('form-serialize');
-
-var _formSerialize2 = _interopRequireDefault(_formSerialize);
-
-var _emailRegex = require('./email-regex.es6');
-
-var _emailRegex2 = _interopRequireDefault(_emailRegex);
-
-var _currencyRegex = require('./currency-regex.es6');
-
-var _currencyRegex2 = _interopRequireDefault(_currencyRegex);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-_flyd2.default.filter = require('flyd/module/filter');
-_flyd2.default.mergeAll = require('flyd/module/mergeall');
-_flyd2.default.sampleOn = require('flyd/module/sampleon');
-_flyd2.default.scanMerge = require('flyd/module/scanmerge');
+var emailRegex = require('./email-regex');
+var currencyRegex = require('./currency-regex');
 
 // constraints: a hash of key/vals where each key is the name of an input
 // and each value is an object of validator names and arguments
 //
 // validators: a hash of validation names mapped to boolean functions
 //
-// messages: a hash of validator names and field names mapped to error messages
+// messages: a hash of validator names and field names mapped to error messages 
 //
-// messages match on the most specific thing in the messages hash
-// - first checks if there is an exact match on field name
-// - then checks for match on validator name
+// messages match to validation errors hierarchically:
+// - first checks if there is an exact match on both field name and validator name
+// - then checks for a match on just the field name
+// - then checks for a match on the validator name
 //
 // Given a constraint like:
 // {name: {required: true}}
@@ -50,109 +33,122 @@ _flyd2.default.scanMerge = require('flyd/module/scanmerge');
 // {name: 'Please enter your name'}
 // {required: 'This is required'}
 
-function init(state) {
-  state = state || {};
-  state = _ramda2.default.merge({
-    focus$: _flyd2.default.stream(),
-    change$: _flyd2.default.stream(),
-    submit$: _flyd2.default.stream(),
-    validators: {},
-    messages: {},
-    constraints: {}
-  }, state);
+function init(config) {
+  config = config || {};
+  var state = {
+    focus$: flyd.stream(),
+    change$: flyd.stream(),
+    submit$: flyd.stream(),
+    formData$: config.formData$ || flyd.stream({})
+  };
+  state.validators = R.merge(defaultValidators, config.validators || {});
+  state.messages = R.merge(defaultMessages, config.messages || {});
+  state.constraints = config.constraints || {};
 
-  state.validators = _ramda2.default.merge(defaultValidators, state.validators);
-  state.messages = _ramda2.default.merge(defaultMessages, state.messages);
-  state.constraints = state.constraints || {};
-
-  var fieldErr$ = _flyd2.default.map(validateField(state), state.change$);
-  var submitErr$ = _flyd2.default.map(validateForm(state), state.submit$);
-  var formErr$ = _flyd2.default.filter(_ramda2.default.identity, submitErr$);
+  var fieldErr$ = flyd.map(validateField(state), state.change$);
+  var submitErr$ = flyd.map(validateForm(state), state.submit$);
+  var formErr$ = flyd.filter(R.identity, submitErr$);
   // Clear all errors on input focus
-  var clearErr$ = _flyd2.default.map(function (ev) {
+  var clearErr$ = flyd.map(function (ev) {
     return [ev.target.name, null];
   }, state.focus$);
   // stream of error pairs of [field_name, error_message]
-  var allErrs$ = _flyd2.default.mergeAll([fieldErr$, formErr$, clearErr$]);
+  var allErrs$ = flyd.mergeAll([fieldErr$, formErr$, clearErr$]);
   // Stream of all errors scanned into one object
-  state.errors$ = _flyd2.default.scan(function (data, pair) {
-    return _ramda2.default.assoc(pair[0], pair[1], data);
+  state.errors$ = flyd.scan(function (data, pair) {
+    return R.assoc(pair[0], pair[1], data);
   }, {}, allErrs$);
 
   // Stream of field names and new values
-  state.nameVal$ = _flyd2.default.map(function (node) {
+  state.nameVal$ = flyd.map(function (node) {
     return [node.name, node.value];
   }, state.change$);
-  // Stream of all data scanned into one object
-  state.data$ = _flyd2.default.scanMerge([[state.nameVal$, function (data, pair) {
-    return _ramda2.default.assoc(pair[0], pair[1], data);
+  // Stream of all user-inputted data scanned into one object
+  state.userData$ = flyd.scanMerge([[state.nameVal$, function (data, pair) {
+    return R.assoc(pair[0], pair[1], data);
   }] // change sets a single key/val into data
   , [state.submit$, function (data, form) {
-    return (0, _formSerialize2.default)(form, { hash: true });
+    return serializeForm(form, { hash: true });
   }] // submit overrides all data by serializing the whole form
-  ], state.data || {});
+  ], state.formData$() || {});
 
-  state.invalidSubmit$ = _flyd2.default.filter(_ramda2.default.apply(function (key, val) {
+  state.invalidSubmit$ = flyd.filter(R.apply(function (key, val) {
     return val;
   }), submitErr$);
-  state.validSubmit$ = _flyd2.default.filter(_ramda2.default.apply(function (key, val) {
+  state.validSubmit$ = flyd.filter(R.apply(function (key, val) {
     return !val;
   }), submitErr$);
-  state.validData$ = _flyd2.default.sampleOn(state.validSubmit$, state.data$);
+  state.validData$ = flyd.sampleOn(state.validSubmit$, state.userData$);
 
   return state;
 }
 
 // Generate a stream of objects of errors
 var errorsStream = function errorsStream(state) {
-  var fieldErr$ = _flyd2.default.map(validateField(state), state.change$);
-  var formErr$ = _flyd2.default.filter(_ramda2.default.identity, _flyd2.default.map(validateForm(state), state.submit$));
+  var fieldErr$ = flyd.map(validateField(state), state.change$);
+  var formErr$ = flyd.filter(R.identity, flyd.map(validateForm(state), state.submit$));
   // Clear all errors on input focus
-  var clearErr$ = _flyd2.default.map(function (ev) {
+  var clearErr$ = flyd.map(function (ev) {
     return [ev.target.name, null];
   }, state.focus$);
   // stream of error pairs of [field_name, error_message]
-  var allErrs$ = _flyd2.default.mergeAll([fieldErr$, formErr$, clearErr$]);
+  var allErrs$ = flyd.mergeAll([fieldErr$, formErr$, clearErr$]);
   // Stream of all errors scanned into one object
-  return _flyd2.default.scan(function (data, pair) {
-    return _ramda2.default.assoc(pair[0], pair[1], data);
+  return flyd.scan(function (data, pair) {
+    return R.assoc(pair[0], pair[1], data);
   }, {}, allErrs$);
 };
 
 // -- Views
 
-var form = _ramda2.default.curry(function (state, elm) {
-  elm.data = _ramda2.default.merge(elm.data, {
-    on: { submit: function submit(ev) {
-        ev.preventDefault();state.submit$(ev.currentTarget);
-      } }
+var form = R.curryN(4, function (state, sel) {
+  var data = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+  var children = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : [];
+
+  var elm = h('form', data, children);
+  elm.data = R.merge(data, {
+    on: {
+      submit: function submit(ev) {
+        if (data.on && data.on.submit) data.on.submit(ev);
+        ev.preventDefault();
+        state.submit$(ev.currentTarget);
+      }
+    }
   });
   return elm;
 });
 
 // A single form field
 // Data takes normal snabbdom data for the input/select/textarea (eg props, style, on)
-var field = _ramda2.default.curry(function (state, elm) {
-  if (!elm.data.props || !elm.data.props.name) throw new Error("You need to provide a field name for validation (using the 'props.name' property)");
-  var err = state.errors$()[elm.data.props.name];
+var field = R.curryN(4, function (state, sel) {
+  var data = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+  var children = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : [];
+
+  if (!data.props || !data.props.name) throw new Error("You need to provide a field name for validation (using the 'props.name' property)");
+  var err = state.errors$()[data.props.name];
   var invalid = err && err.length;
 
-  elm.data = _ramda2.default.merge(elm.data, {
+  var elm = h(sel, R.merge(data, {
     on: {
       focus: state.focus$,
       change: function change(ev) {
         return state.change$(ev.currentTarget);
       }
     },
+    props: R.merge({
+      value: state.formData$()[data.props.name]
+    }, data.props),
     attrs: { 'data-ff-field-input': invalid ? 'invalid' : 'valid' }
-  });
+  }));
 
-  return (0, _h2.default)('div', {
-    attrs: { 'data-ff-field': invalid ? 'invalid' : 'valid' }
-  }, [invalid ? (0, _h2.default)('p', {
+  var errMsg = invalid ? h('p', {
     hook: { insert: scrollToThis },
     attrs: { 'data-ff-field-error': invalid ? 'nonempty' : 'empty' }
-  }, err) : '', elm]);
+  }, err) : '';
+
+  return h('div', {
+    attrs: { 'data-ff-field': invalid ? 'invalid' : 'valid' }
+  }, [errMsg, elm]);
 });
 
 var scrollToThis = function scrollToThis(vnode) {
@@ -161,7 +157,7 @@ var scrollToThis = function scrollToThis(vnode) {
 
 // Pass in an array of validation functions and the event object
 // Will return a pair of [name, errorMsg] (errorMsg will be null if no errors present)
-var validateField = _ramda2.default.curry(function (state, node) {
+var validateField = R.curry(function (state, node) {
   var value = node.value;
   var name = node.name;
   if (!state.constraints[name]) return [name, null]; // no validators for this field present
@@ -169,13 +165,13 @@ var validateField = _ramda2.default.curry(function (state, node) {
   // Do not validate non-required blank fields
   if (!state.constraints[name].required && valIsUnset(value)) return [name, null];
 
-  // Find the first constraint that fails its validator
+  // Find the first constraint that fails its validator 
   for (var valName in state.constraints[name]) {
     var arg = state.constraints[name][valName];
     if (!state.validators[valName]) {
       console.warn("Form validation constraint does not exist:", valName);
-    } else if (!state.validators[valName](value, arg)) {
-      var msg = getErr(state.messages, name, valName, arg);
+    } else if (!state.validators[valName](value, arg, state.userData$())) {
+      var msg = getErrMsg(state.messages, name, valName, arg);
       return [name, String(msg)];
     }
   }
@@ -184,18 +180,19 @@ var validateField = _ramda2.default.curry(function (state, node) {
 
 // Retrieve errors for the entire set of form data, used on form submit events,
 // using the form data saved into the state
-var validateForm = _ramda2.default.curry(function (state, node) {
-  var formData = (0, _formSerialize2.default)(node, { hash: true });
+var validateForm = R.curry(function (state, node) {
+  var formData = serializeForm(node, { hash: true });
+  // For every field name in the provided contraints
   for (var fieldName in state.constraints) {
-    var value = state.data$()[fieldName];
+    var value = state.userData$()[fieldName];
+    // Skip the validation of non-required fields that are missing
     if (state.constraints[fieldName] && (state.constraints[fieldName].required || !valIsUnset(value))) {
-      // dont validate undefined non-required fields
       for (var valName in state.constraints[fieldName]) {
         var arg = state.constraints[fieldName][valName];
         if (!state.validators[valName]) {
-          console.warn("Form validation constraint does not exist:", valName);
-        } else if (!state.validators[valName](value, arg)) {
-          var msg = getErr(state.messages, fieldName, valName, arg);
+          console.warn("Form validator function does not exist:", valName);
+        } else if (!state.validators[valName](value, arg, formData)) {
+          var msg = getErrMsg(state.messages, fieldName, valName, arg);
           return [fieldName, String(msg)];
         }
       }
@@ -203,20 +200,15 @@ var validateForm = _ramda2.default.curry(function (state, node) {
   }
 });
 
-// Given the messages object, the validator argument, the field name, and the validator name
+// Given the messages object, the field name, and the validator name, and the validator argument
 // Retrieve and apply the error message function
-var getErr = function getErr(messages, name, valName, arg) {
-  var err = messages[name] ? messages[name][valName] || messages[name] : messages[valName];
+var getErrMsg = function getErrMsg(messages, name, valName, arg) {
+  var err = messages[name] && messages[name][valName] ? messages[name][valName] : messages[valName] ? messages[valName] : messages[name] ? messages[name] : messages.fallback;
   if (typeof err === 'function') return err(arg);else return err;
 };
 
-// Test for an unset value
-// Can't use just !val because we want 0 to be true
-var valIsUnset = function valIsUnset(val) {
-  return val === undefined || val === '' || val === null;
-};
-
 var defaultMessages = {
+  fallback: 'This looks invalid',
   email: 'Please enter a valid email address',
   required: 'This field is required',
   currency: 'Please enter valid currency',
@@ -247,13 +239,13 @@ var defaultMessages = {
 
 var defaultValidators = {
   email: function email(val) {
-    return String(val).match(_emailRegex2.default);
+    return String(val).match(emailRegex);
   },
   required: function required(val) {
     return !valIsUnset(val);
   },
   currency: function currency(val) {
-    return String(val).match(_currencyRegex2.default);
+    return String(val).match(currencyRegex);
   },
   format: function format(val, arg) {
     return String(val).match(arg);
@@ -281,7 +273,20 @@ var defaultValidators = {
   },
   includedIn: function includedIn(val, arr) {
     return arr.indexOf(val) !== -1;
-  }
+  },
+  matches: matches
+};
+
+// Does a field value match another field value, given the other's name and the full form data?
+var matches = function matches(val, otherName, data) {
+  var otherVal = data[otherName];
+  return val === otherVal;
+};
+
+// Test for an unset value
+// Can't use just !val because we want 0 to be true
+var valIsUnset = function valIsUnset(val) {
+  return val === undefined || val === '' || val === null;
 };
 
 module.exports = { init: init, field: field, form: form };

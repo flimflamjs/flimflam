@@ -1,24 +1,16 @@
 const test = require('tape')
 const R = require("ramda")
 const flyd = require("flyd")
-const render = require('../../render')
+const render = require('flimflam-render')
 const h = require('snabbdom/h')
-const snabbdom =require('snabbdom')
-const patch = snabbdom.init([ // Init patch function with choosen modules
-  require('snabbdom/modules/class') // makes it easy to toggle classes
-, require('snabbdom/modules/props') // for setting properties on DOM elements
-, require('snabbdom/modules/style') // handles styling on elements with support for animations
-, require('snabbdom/modules/eventlisteners') // attaches event listeners
-, require('snabbdom/modules/attributes')
-])
 
 const wizard = require('../index.es6')
 
 function wizComponent(steps) {
   const container = document.createElement('div')
-  const view = wizard.view
-  const state = wizard.init({steps})
-  const streams = render({view, state, container, patch})
+  const view = state => h('div', [ wizard.view(state, steps)])
+  const state = wizard.init()
+  let streams = render(view, state, container)
   streams.state = state
   streams.container = container
   return streams

@@ -3,14 +3,6 @@ const R = require("ramda")
 const flyd = require("flyd")
 const render = require('flimflam-render')
 const h = require('snabbdom/h')
-const snabbdom =require('snabbdom')
-const patch = snabbdom.init([ // Init patch function with choosen modules
-  require('snabbdom/modules/class') // makes it easy to toggle classes
-, require('snabbdom/modules/props') // for setting properties on DOM elements
-, require('snabbdom/modules/style') // handles styling on elements with support for animations
-, require('snabbdom/modules/eventlisteners') // attaches event listeners
-, require('snabbdom/modules/attributes') // attaches event listeners
-])
 
 import '../index.css'
 import modal from '../index.es6'
@@ -33,13 +25,14 @@ function initModals(state) {
     , body: 'modal2-body'
     , footer: 'modal2-footer'
     }
+  , id$
   }, state || {})
   const view = state => h('div', [
     modal(state.modal1)
   , modal(state.modal2)
   ])
   const container = document.createElement('div')
-  const streams = render({state, view, patch, container})
+  const streams = render(view, state, container)
   streams.state = state
   return streams
 }
@@ -48,11 +41,11 @@ test('it sets shown state when id matches id stream', t => {
   t.plan(2)
   const streams = initModals()
 
-  streams.state.modal1.id$('modal1')
+  streams.state.id$('modal1')
   const el1 = streams.dom$().querySelector('[data-ff-modal]').getAttribute('data-ff-modal')
   t.strictEqual(el1, 'shown')
 
-  streams.state.modal1.id$('modal2')
+  streams.state.id$('modal2')
   const el2 = streams.dom$().querySelectorAll('[data-ff-modal]')[1].getAttribute('data-ff-modal')
   t.strictEqual(el2, 'shown')
 })
@@ -112,7 +105,7 @@ test('it vertically centers', t => {
   const container = document.createElement('div')
   document.body.appendChild(container)
 
-  const streams = render({state, view, patch, container})
+  const streams = render(view, state, container)
   const body = streams.dom$().querySelector('[data-ff-modal-body]')
   t.ok(body.offsetHeight > 0)
 })

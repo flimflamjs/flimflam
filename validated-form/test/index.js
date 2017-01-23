@@ -1,34 +1,24 @@
 const test = require('tape')
 const R = require("ramda")
 const flyd = require("flyd")
-const render = require('../../render')
+const render = require('flimflam-render')
 const h = require('snabbdom/h')
-const snabbdom =require('snabbdom')
-const patch = snabbdom.init([ // Init patch function with choosen modules
-  require('snabbdom/modules/class') // makes it easy to toggle classes
-, require('snabbdom/modules/props') // for setting properties on DOM elements
-, require('snabbdom/modules/style') // handles styling on elements with support for animations
-, require('snabbdom/modules/eventlisteners') // attaches event listeners
-, require('snabbdom/modules/attributes')
-])
 
 const validatedForm = require('../index.es6')
 
 function initForm(state) {
-  const view = state =>
-    validatedForm.form(state, h('form', [
-      validatedForm.field(state, h('input', {
-        props: {name: 'email'}
-      }))
-    , validatedForm.field(state, h('input', {
-        props: {name: 'password'}
-      }))
-    ]))
-
+  const view = state => {
+    const form = validatedForm.form(state, 'form', {})
+    const input = validatedForm.field(state, 'input')
+    return form([
+      input({props: {name: 'email'}}, [])
+    , input({props: {name: 'password'}}, [])
+    ])
+  }
   state = validatedForm.init(state)
 
-  let container = document.createElement('div')
-  let streams = render({state, view, patch, container})
+  const container = document.createElement('div')
+  const streams = render(view, state, container)
   streams.state = state
   return streams
 }
@@ -204,5 +194,4 @@ test('includedIn', t => {
   t.ok(state.validators.includedIn(1, [1,1,1]))
   t.ok(!state.validators.includedIn(3, [1,1,1]))
 })
-
 

@@ -8,24 +8,23 @@ A package for the flimflam core UI components:
   * [wizard](/wizard)
   * [notification](/notification)
   * [button](/button)
+  * [confirmation](/confirmation)
   * [validated-form](/validated-form)
   * [tabswap](/tabswap)
+  * [autocomplete](/autocomplete)
 
 
 ```js
-import modal from 'ff-core/modal'
-import wizard from 'ff-core/wizard'
-import validatedForm from 'ff-core/validated-form'
-import render from 'ff-core/render'
+const modal = require('ff-core/modal')
+const wizard = require('ff-core/wizard')
+const validatedForm = require('ff-core/validated-form')
+const render = require('ff-core/render')
 // etc
 ```
 
 Open up each module directory in github, and you can find documentation for each one in the README.md in each directory.
 
-To see a full directory of curated flimflam components, go to
-[https://flimflamjs.github.io](https://flimflamjs.github.io). This package is
-just for those components that we think nearly all applications will need (ie,
-a standard lib for ui components).
+To see a full directory of curated flimflam components, go to [https://flimflamjs.github.io](https://flimflamjs.github.io). This package is just for those components that we think nearly all applications will need (ie. a standard lib for ui components).
 
 ## development
 

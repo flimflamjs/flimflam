@@ -1,19 +1,9 @@
-import flyd from 'flyd'
-import R from 'ramda'
-import test from 'tape'
-import h from 'snabbdom/h'
-import snabbdom from 'snabbdom'
-import tabswap from '../index.es6'
-import render from '../../render'
-
-
-const patch = snabbdom.init([
-  require("snabbdom/modules/class")
-, require("snabbdom/modules/style")
-, require("snabbdom/modules/props")
-, require("snabbdom/modules/eventlisteners")
-, require("snabbdom/modules/attributes")
-])
+const flyd = require('flyd')
+const R = require('ramda')
+const test = require('tape')
+const h = require('snabbdom/h')
+const tabswap = require('../index.es6')
+const render = require('flimflam-render')
 
 function init() {
   const state = {
@@ -27,7 +17,7 @@ function init() {
     })
   ])
   const container = document.createElement('div')
-  const streams = render({container, patch, view, state})
+  let streams = render(view, state, container)
   streams.container = container
   streams.state = state
   return streams
