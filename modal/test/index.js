@@ -4,28 +4,26 @@ const flyd = require("flyd")
 const render = require('flimflam-render')
 const h = require('snabbdom/h')
 
-import '../index.css'
-import modal from '../index.es6'
+require('../index.css') // cssify
+const modal = require('../index.es6')
 
 function initModals(state) {
-  const id$ = flyd.stream()
+  const show1$ = flyd.stream()
+  const show2$ = flyd.stream()
   state = R.merge({
     modal1: {
-      id$
-    , thisID: 'modal1'
+      show$: show1$
     , title: 'modal1-title'
     , body: 'modal1-body'
     , footer: 'modal1-footer'
     }
   , modal2: {
-      id$
-    , thisID: 'modal2'
+      show$: show2$
     , title: 'modal2-title'
     , notCloseable: true
     , body: 'modal2-body'
     , footer: 'modal2-footer'
     }
-  , id$
   }, state || {})
   const view = state => h('div', [
     modal(state.modal1)
@@ -37,65 +35,62 @@ function initModals(state) {
   return streams
 }
 
-test('it sets shown state when id matches id stream', t => {
+test('it sets shown state when show stream is true', t => {
   t.plan(2)
   const streams = initModals()
 
-  streams.state.id$('modal1')
+  streams.state.modal1.show$(true)
   const el1 = streams.dom$().querySelector('[data-ff-modal]').getAttribute('data-ff-modal')
   t.strictEqual(el1, 'shown')
 
-  streams.state.id$('modal2')
+  streams.state.modal2.show$(true)
   const el2 = streams.dom$().querySelectorAll('[data-ff-modal]')[1].getAttribute('data-ff-modal')
   t.strictEqual(el2, 'shown')
 })
 
-test('it sets hidden state when id does not match id stream', t => {
+test('it sets hidden state when show stream contains false', t => {
   t.plan(2)
   const streams = initModals()
 
-  streams.state.modal1.id$('modal1')
+  streams.state.modal2.show$(true)
+  streams.state.modal2.show$(false)
   const el2 = streams.dom$().querySelectorAll('[data-ff-modal]')[1].getAttribute('data-ff-modal')
   t.strictEqual(el2, 'hidden')
 
-  streams.state.modal1.id$('modal2')
+  streams.state.modal1.show$(true)
+  streams.state.modal1.show$(false)
   const el1 = streams.dom$().querySelector('[data-ff-modal]').getAttribute('data-ff-modal')
   t.strictEqual(el1, 'hidden')
 })
 
-test('it pushes null to the id stream when backdrop is clicked', t => {
-  t.plan(2)
+test('the show$ stream contains false when the backdrop is clicked', t => {
+  t.plan(1)
   const streams = initModals()
-  streams.state.modal1.id$('modal1')
-  t.equal(streams.state.modal1.id$(), 'modal1')
+  streams.state.modal1.show$(true)
   streams.dom$().querySelector('[data-ff-modal-backdrop]').click()
-  t.equal(streams.state.modal1.id$(), null)
+  t.equal(streams.state.modal1.show$(), false)
 })
 
 test('it does not close on non-closeable modals when the backdrop is clicked', t => {
-  t.plan(2)
+  t.plan(1)
   const streams = initModals()
-  streams.state.modal2.id$('modal2')
-  t.equal(streams.state.modal2.id$(), 'modal2')
+  streams.state.modal2.show$(true)
   streams.dom$().querySelectorAll('[data-ff-modal-backdrop]')[1].click()
-  t.equal(streams.state.modal2.id$(), 'modal2')
+  t.equal(streams.state.modal2.show$(), true)
 })
 
-test('it pushes null to the id stream when close button is clicked', t => {
-  t.plan(2)
+test('the show$ stream contains false when the close button is clicked', t => {
+  t.plan(1)
   const streams = initModals()
-  streams.state.modal1.id$('modal1')
-  t.equal(streams.state.modal1.id$(), 'modal1')
+  streams.state.modal1.show$(true)
   streams.dom$().querySelector('[data-ff-modal-close-button]').click()
-  t.equal(streams.state.modal1.id$(), null)
+  t.equal(streams.state.modal1.show$(), false)
 })
 
 test('it vertically centers', t => {
   t.plan(1)
-  const id$ = flyd.stream()
   const state = {
-    id$: flyd.stream('flimflam')
-  , thisID: 'flimflam'
+    show$: flyd.stream(true)
   , title: 'Title Goes Here'
   , body: "Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there Hi there "
   , footer: 'what!'
@@ -104,7 +99,6 @@ test('it vertically centers', t => {
   const view = state => h('div', [ modal(state) ])
   const container = document.createElement('div')
   document.body.appendChild(container)
-
   const streams = render(view, state, container)
   const body = streams.dom$().querySelector('[data-ff-modal-body]')
   t.ok(body.offsetHeight > 0)

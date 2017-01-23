@@ -1,34 +1,23 @@
 'use strict';
 
-var _flyd = require('flyd');
-
-var _flyd2 = _interopRequireDefault(_flyd);
-
-var _h = require('snabbdom/h');
-
-var _h2 = _interopRequireDefault(_h);
-
-var _ramda = require('ramda');
-
-var _ramda2 = _interopRequireDefault(_ramda);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+var flyd = require('flyd');
+var h = require('snabbdom/h');
+var R = require('ramda');
 
 function view(state) {
-  var hook = void 0;
+  var hook;
   if (state.noVerticalCentering) {
     hook = {};
   } else {
     hook = { insert: addResizeListener(state), postpatch: verticallyCenter(state) };
   }
-  return (0, _h2.default)('div', { // shaded overlay around modal
-    on: { click: closeIfOnBackdrop(state.id$, state.notCloseable) },
-    attrs: { 'data-ff-modal-backdrop': state.id$() === state.thisID ? 'shown' : 'hidden' }
-  }, [(0, _h2.default)('div', {
+  return h('div', { // shaded overlay around modal
+    on: { click: closeIfOnBackdrop(state.show$, state.notCloseable) },
+    attrs: { 'data-ff-modal-backdrop': state.show$() ? 'shown' : 'hidden' }
+  }, [h('div', {
     hook: hook,
-    props: { id: state.thisID },
-    attrs: { 'data-ff-modal': state.id$() === state.thisID ? 'shown' : 'hidden' }
-  }, [state.notCloseable ? '' : closeBtn(state.id$), state.title ? header(state) : '', body(state), state.footer ? footer(state) : ''])]);
+    attrs: { 'data-ff-modal': state.show$() ? 'shown' : 'hidden' }
+  }, [state.notCloseable ? '' : closeBtn(state.show$), state.title ? header(state) : '', body(state), state.footer ? footer(state) : ''])]);
 }
 
 var verticallyCenter = function verticallyCenter(state) {
@@ -60,31 +49,31 @@ var addResizeListener = function addResizeListener(state) {
 };
 
 // Push to the close stream if the user clicks the shaded backdrop element (and not anywhere within the modal itself)
-var closeIfOnBackdrop = function closeIfOnBackdrop(id$, notCloseable) {
+var closeIfOnBackdrop = function closeIfOnBackdrop(show$, notCloseable) {
   return function (ev) {
     if (notCloseable) return;
     var className = ev.target.className;
     // If not clicking the backdrop, don't close the modal, just return early
     if (!ev.target.hasAttribute('data-ff-modal-backdrop')) return;
     // Else close the modal
-    id$(null);
+    show$(false);
   };
 };
 
 var header = function header(state) {
-  return (0, _h2.default)('div', { attrs: { 'data-ff-modal-header': '' } }, [(0, _h2.default)('h4', [state.title])]);
+  return h('div', { attrs: { 'data-ff-modal-header': '' } }, [h('h4', [state.title])]);
 };
 
 var body = function body(state) {
-  return (0, _h2.default)('div', { attrs: { 'data-ff-modal-body': '' } }, state.body.constructor === Array ? state.body : [state.body]);
+  return h('div', { attrs: { 'data-ff-modal-body': '' } }, state.body.constructor === Array ? state.body : [state.body]);
 };
 
-var closeBtn = function closeBtn(id$) {
-  return (0, _h2.default)('a', { attrs: { 'data-ff-modal-close-button': '' }, on: { click: [id$, null] } });
+var closeBtn = function closeBtn(show$) {
+  return h('a', { attrs: { 'data-ff-modal-close-button': '' }, on: { click: [show$, false] } });
 };
 
 var footer = function footer(state) {
-  return (0, _h2.default)('div', { attrs: { 'data-ff-modal-footer': '' } }, state.footer.constructor === Array ? state.footer : [state.footer]);
+  return h('div', { attrs: { 'data-ff-modal-footer': '' } }, state.footer.constructor === Array ? state.footer : [state.footer]);
 };
 
 module.exports = view;
