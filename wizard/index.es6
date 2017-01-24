@@ -1,8 +1,7 @@
-import R from 'ramda'
-import h from 'snabbdom/h'
-import flyd from 'flyd'
+const R = require('ramda')
+const h = require('snabbdom/h')
+const flyd = require('flyd')
 flyd.filter = require('flyd/module/filter')
-
 const mapIndex = R.addIndex(R.map)
 
 // User can pass in any default state data
@@ -19,7 +18,6 @@ const init = state => {
   const validJump$ = flyd.map(R.head, flyd.filter(R.apply(R.lte), state.jump$))
   // Merge in valid jumps into the existing currentStep stream
   state.currentStep$ = flyd.merge(state.currentStep$, validJump$)
-
   return state
 }
 
@@ -57,7 +55,7 @@ const stepHeader = (state, width) => (name, idx) =>
     style: {width: width}
   , attrs: {
       'data-ff-wizard-index-label': 
-        state.currentStep$() === idx ? 'current'
+          state.currentStep$() === idx ? 'current'
         : state.currentStep$() > idx ? 'accessible'
         : 'inaccessible'
     }
@@ -66,10 +64,10 @@ const stepHeader = (state, width) => (name, idx) =>
 
 
 const body = (state, stepBodies) => {
-  let bodies = mapIndex(stepBody(state), stepBodies)
+  const bodyDivs = mapIndex(stepBody(state), stepBodies)
   return h('div', {
     attrs: {'data-ff-wizard-steps': state.isCompleted$() ? 'complete' : 'incomplete' }
-  }, bodies)
+  }, bodyDivs)
 }
 
 const stepBody = state => (content, idx) =>
