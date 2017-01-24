@@ -56,6 +56,7 @@ Default validator functions:
 | minLength | Integer | array must have min length x |
 | lengthEquals | Integer | array/string must have length x |
 | includedIn | Array | value must be within given array |
+| matchesField | String | value must the value of another field|
 
 Default error messages:
 
@@ -73,6 +74,7 @@ Default error messages:
 | minLength | `This should be longer than ${n}` |
 | lengthEquals | `This should have a length of ${n}` |
 | includedIn | `This should be one of: ${arr.join(', ')}` |
+| matchesField | `This field should match the ${n} field` |
 | fallback | 'This looks invalid' |
 
 ### Custom contraints, validator functions, and messages
@@ -89,7 +91,7 @@ const contraints = {
 , age: {required: true, min: 12}
 , email: {required: true, email: true}
 , password: {required: true, minLength: 7}
-, passwordConfirmation: {required: true, matches: 'password'}
+, passwordConfirmation: {required: true, matchesField: 'password'}
 }
 
 // The validator 'isNot' is not in the default validators so can be defined by us:

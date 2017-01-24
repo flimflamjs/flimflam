@@ -203,7 +203,13 @@ const defaultMessages = {
 , minLength: n => `This should be longer than ${n}`
 , lengthEquals: n => `This should have a length of ${n}`
 , includedIn: arr => `This should be one of: ${arr.join(', ')}`
-, matches: n => `This field should match the ${n} field`
+, matchesField: n => `This field should match the ${n} field`
+}
+
+// Does a field value match another field value, given the other's name and the full form data?
+const matchesField = (val, otherName, data) => {
+  const otherVal = data[otherName]
+  return val === otherVal
 }
 
 const defaultValidators = {
@@ -219,13 +225,7 @@ const defaultValidators = {
 , minLength: (val, n) => val.length >= n
 , lengthEquals: (val, n) => val.length === n
 , includedIn: (val, arr) => arr.indexOf(val) !== -1
-, matches
-}
-
-// Does a field value match another field value, given the other's name and the full form data?
-const matches = (val, otherName, data) => {
-  const otherVal = data[otherName]
-  return val === otherVal
+, matchesField
 }
 
 // Test for an unset value

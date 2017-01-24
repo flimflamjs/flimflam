@@ -194,4 +194,9 @@ test('includedIn', t => {
   t.ok(state.validators.includedIn(1, [1,1,1]))
   t.ok(!state.validators.includedIn(3, [1,1,1]))
 })
-
+test('matchesField', t => {
+  t.plan(2)
+  const state = validatedForm.init()
+  t.ok(state.validators.matchesField(1, 'y', {y: 1}))
+  t.ok(!state.validators.matchesField(1, 'y', {y: 2}))
+})

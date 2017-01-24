@@ -235,9 +235,15 @@ var defaultMessages = {
   includedIn: function includedIn(arr) {
     return 'This should be one of: ' + arr.join(', ');
   },
-  matches: function matches(n) {
+  matchesField: function matchesField(n) {
     return 'This field should match the ' + n + ' field';
   }
+};
+
+// Does a field value match another field value, given the other's name and the full form data?
+var matchesField = function matchesField(val, otherName, data) {
+  var otherVal = data[otherName];
+  return val === otherVal;
 };
 
 var defaultValidators = {
@@ -277,13 +283,7 @@ var defaultValidators = {
   includedIn: function includedIn(val, arr) {
     return arr.indexOf(val) !== -1;
   },
-  matches: matches
-};
-
-// Does a field value match another field value, given the other's name and the full form data?
-var matches = function matches(val, otherName, data) {
-  var otherVal = data[otherName];
-  return val === otherVal;
+  matchesField: matchesField
 };
 
 // Test for an unset value
