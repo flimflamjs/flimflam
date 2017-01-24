@@ -25,6 +25,9 @@ const view = state => {
  ])
 }
 ```
+node
+
+**Note** that unlike the snabbdom `h` function, the `validatedForm.form` and `validatedField.field` functions are curried to exactly 4 parameters, so you must pass in all 4 arguments to get the VNode. For example, you must call it like `validatedForm.field(state.from, 'input', {props: {name: 'xyz', type: 'text'}}, [])` with **4** elements to get the VNode to return.
 
 # State init function
 

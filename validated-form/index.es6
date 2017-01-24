@@ -203,6 +203,7 @@ const defaultMessages = {
 , minLength: n => `This should be longer than ${n}`
 , lengthEquals: n => `This should have a length of ${n}`
 , includedIn: arr => `This should be one of: ${arr.join(', ')}`
+, matches: n => `This field should match the ${n} field`
 }
 
 const defaultValidators = {

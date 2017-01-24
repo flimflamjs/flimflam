@@ -234,6 +234,9 @@ var defaultMessages = {
   },
   includedIn: function includedIn(arr) {
     return 'This should be one of: ' + arr.join(', ');
+  },
+  matches: function matches(n) {
+    return 'This field should match the ' + n + ' field';
   }
 };
 
