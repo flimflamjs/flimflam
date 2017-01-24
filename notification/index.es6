@@ -11,8 +11,6 @@ flyd.afterSilence = require('flyd/module/aftersilence')
 
 const log = R.curryN(2, console.log.bind(console))
 
-window.flyd = flyd
-
 function init(state) {
   state = R.merge({hideDelay: 5000, message$: flyd.stream()}, state || {})
   // Stream of null value after a ms delay

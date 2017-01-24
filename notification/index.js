@@ -24,8 +24,6 @@ _flyd2.default.afterSilence = require('flyd/module/aftersilence');
 
 var log = _ramda2.default.curryN(2, console.log.bind(console));
 
-window.flyd = _flyd2.default;
-
 function init(state) {
   state = _ramda2.default.merge({ hideDelay: 5000, message$: _flyd2.default.stream() }, state || {});
   // Stream of null value after a ms delay

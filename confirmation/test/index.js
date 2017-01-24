@@ -45,11 +45,19 @@ test('it sets the deny text', t => {
   t.equal(text, 'noooooo')
 })
 
-test('emitting truthy in the open confirmation streams sets the modal id', t => {
+test('emitting truthy in the open confirmation streams sets the modal stream', t => {
   t.plan(1)
   const streams = initComponent()
   streams.state.openConf$(true)
-  t.equal(streams.state.conf.modalID$(), 'confirmationModal')
+  t.equal(streams.state.conf.showModal$(), true)
+})
+
+test('responding to the confirmation sets the modal stream to false', t => {
+  t.plan(1)
+  const streams = initComponent()
+  streams.state.openConf$(true)
+  streams.dom$().querySelector('button').click()
+  t.equal(streams.state.conf.showModal$(), false)
 })
 
 test('clicking yes emits true in confirm$', t => {

@@ -10,14 +10,14 @@ const init = isOpen$ => {
     confirmed$
   , flyd.map(()=> false, denied$)
   )
-  // Set confirmation modal id when isOpen$ has a value
+  // Show the modal when isOpen$ has a value
   // Close the confirmation modal when the user responds
-  const modalID$ = flyd.merge(
-    flyd.map(()=> 'confirmationModal', isOpen$)
-  , flyd.map(()=> null, response$)
+  const showModal$ = flyd.merge(
+    flyd.map(()=> true, isOpen$)
+  , flyd.map(()=> false, response$)
   )
   return {
-    modalID$
+    showModal$
   , isOpen$
   , confirmed$
   , denied$
@@ -38,8 +38,7 @@ const view = (state, config) => {
     attrs: {'data-ff-confirmation': state.isOpen$() ? 'shown' : 'hidden'}
   }, [
     modal({
-      thisID: 'confirmationModal'
-    , id$: state.modalID$
+      show$: state.showModal$
     , body: modalBody(state, setConfigDefaults(config))
     })
   ])
