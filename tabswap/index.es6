@@ -1,48 +1,58 @@
-import snabbdom from 'snabbdom'
-import R from 'ramda'
-import flyd from 'flyd'
-import h from 'snabbdom/h'
+const flyd = require('flyd')
+const h = require('snabbdom/h')
+const R = require('ramda')
 
-module.exports = options => {
-  // Set defaults
+const map = R.addIndex(R.map)
+
+const labels = options => {
   options = R.merge({
-    labels: []
-  , content: []
+    names: []
   , active$: flyd.stream(0)
   }, options)
- 
-  return h('div', { 
-    attrs: {'data-ff-tabswap': 'active:' + options.active$() }
-  }, [
-    labelDiv(options.active$, options.content, options.labels)
-  , contentDiv(options.active$, options.content)
-  ])
+  return h('div', {
+    attrs: {
+      'data-ff-tabswap': 'active:' + options.active$()
+    , 'data-ff-tabswap-labels': true
+    , 'data-ff-tabswap-labels-count': options.names.length
+    }
+  },
+    map(labelSingle(options.active$), options.names)
+  )
 }
 
-
-const labelDiv = (active$, content, labels) =>
-  h('div',
-    R.addIndex(R.map)(labelSingle(active$, labels), content)
-  )
-
-const labelSingle = (active$, labels) => (c, idx) =>
-  h("a", {
-    on: {click: [active$, idx]}
-  , attrs: {
-      'data-ff-tabswap-label': active$() === idx ? 'active' : 'inactive'
-    }
-  }, labels[idx] || '')
-
-
-const contentDiv = (active$, content) =>
-  h('div',
-    R.addIndex(R.map)(contentSingle(active$), content)
-  )
-
-const contentSingle = active$ => (content, idx) =>
+const labelSingle = active$ => (name, idx) =>
   h('div', {
-    attrs: {
-      'data-ff-tabswap-content': active$() === idx ? 'active' : 'inactive'
-    }
-  }, content)
+    attrs: {'data-ff-tabswap-label-wrapper': true}
+  }, [
+    h("a", {
+      on: {click: [active$, idx]}
+    , attrs: {
+        'data-ff-tabswap-label': active$() === idx ? 'active' : 'inactive'
+      }
+    }, [name || ''])
+  ])
 
+
+const content = options => {
+  options = R.merge({
+    sections: []
+  , active$: flyd.stream(0)
+  }, options)
+  return h('div', {
+    attrs: {
+      'data-ff-tabswap': 'active:' + options.active$()
+    , 'data-ff-tabswap-content-wrapper': true
+    , 'data-ff-tabswap-count': options.sections.length
+    }
+  },
+    map(contentSingle(options.active$), options.sections)
+  )
+}
+
+const contentSingle = active$ => (section, idx) =>
+  h('div', {
+    attrs: { 'data-ff-tabswap-content': active$() === idx ? 'active' : 'inactive' }
+  }, section)
+
+
+module.exports = {labels, content}

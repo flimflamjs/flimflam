@@ -1,62 +1,59 @@
 'use strict';
 
-var _snabbdom = require('snabbdom');
+var flyd = require('flyd');
+var h = require('snabbdom/h');
+var R = require('ramda');
 
-var _snabbdom2 = _interopRequireDefault(_snabbdom);
+var map = R.addIndex(R.map);
 
-var _ramda = require('ramda');
-
-var _ramda2 = _interopRequireDefault(_ramda);
-
-var _flyd = require('flyd');
-
-var _flyd2 = _interopRequireDefault(_flyd);
-
-var _h = require('snabbdom/h');
-
-var _h2 = _interopRequireDefault(_h);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-module.exports = function (options) {
-  // Set defaults
-  options = _ramda2.default.merge({
-    labels: [],
-    content: [],
-    active$: _flyd2.default.stream(0)
+var labels = function labels(options) {
+  options = R.merge({
+    names: [],
+    active$: flyd.stream(0)
   }, options);
-
-  return (0, _h2.default)('div', {
-    attrs: { 'data-ff-tabswap': 'active:' + options.active$() }
-  }, [labelDiv(options.active$, options.content, options.labels), contentDiv(options.active$, options.content)]);
+  return h('div', {
+    attrs: {
+      'data-ff-tabswap': 'active:' + options.active$(),
+      'data-ff-tabswap-labels': true,
+      'data-ff-tabswap-labels-count': options.names.length
+    }
+  }, map(labelSingle(options.active$), options.names));
 };
 
-var labelDiv = function labelDiv(active$, content, labels) {
-  return (0, _h2.default)('div', _ramda2.default.addIndex(_ramda2.default.map)(labelSingle(active$, labels), content));
-};
-
-var labelSingle = function labelSingle(active$, labels) {
-  return function (c, idx) {
-    return (0, _h2.default)("a", {
+var labelSingle = function labelSingle(active$) {
+  return function (name, idx) {
+    return h('div', {
+      attrs: { 'data-ff-tabswap-label-wrapper': true }
+    }, [h("a", {
       on: { click: [active$, idx] },
       attrs: {
         'data-ff-tabswap-label': active$() === idx ? 'active' : 'inactive'
       }
-    }, labels[idx] || '');
+    }, [name || ''])]);
   };
 };
 
-var contentDiv = function contentDiv(active$, content) {
-  return (0, _h2.default)('div', _ramda2.default.addIndex(_ramda2.default.map)(contentSingle(active$), content));
+var content = function content(options) {
+  options = R.merge({
+    sections: [],
+    active$: flyd.stream(0)
+  }, options);
+  return h('div', {
+    attrs: {
+      'data-ff-tabswap': 'active:' + options.active$(),
+      'data-ff-tabswap-content-wrapper': true,
+      'data-ff-tabswap-count': options.sections.length
+    }
+  }, map(contentSingle(options.active$), options.sections));
 };
 
 var contentSingle = function contentSingle(active$) {
-  return function (content, idx) {
-    return (0, _h2.default)('div', {
-      attrs: {
-        'data-ff-tabswap-content': active$() === idx ? 'active' : 'inactive'
-      }
-    }, content);
+  return function (section, idx) {
+    return h('div', {
+      attrs: { 'data-ff-tabswap-content': active$() === idx ? 'active' : 'inactive' }
+    }, section);
   };
 };
+
+module.exports = { labels: labels, content: content };
 

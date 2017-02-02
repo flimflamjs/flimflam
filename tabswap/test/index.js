@@ -10,9 +10,12 @@ function init() {
     active$: flyd.stream(1)
   }
   const view = state => h('div', [
-    tabswap({
-      labels: ['a', 'b']
-    , content: ['content a', 'content b']
+    tabswap.labels({
+      names: ['a', 'b']
+    , active$: state.active$
+    })
+  , tabswap.content({
+      sections: ['content a', 'content b']
     , active$: state.active$
     })
   ])
