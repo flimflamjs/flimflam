@@ -12,26 +12,35 @@ Initialize the wizard state and pass in some defaults:
 let myWizardState = wizard.init({
   currentStep$: flyd.stream(0)        // Stream of current steps -- starts at 0
 , isCompleted$: flyd.stream(false)    // stream of Booleans, marking whether the wizard is completed
-, followup: h('div', 'My followup content') // Content to show in the wizard when isCompleted$ has a true value
 })
 ```
 
+### wizard.index(state, content)
 
-### wizard.view(state, steps, followup)
+The `content` parameter is an array of vnodes or strings for each wizard index. 
 
-The `steps` parameter is an array of objects for each wizard step. Each object has a `name` and a `body`. The step name will be displayed in the wizard header.
+### wizard.body(state, content, followup)
+
+The `content` parameter is an array of vnodes or strings for each wizard body. 
 
 The `followup` parameter is an optional snabbdom node that contains some content for when the user completes the wizard.
 
+### example
+
 ```js
   const view = state =>
-    wizard.view(
-      state.wizard
-    , [{name: 'Step 1', body: h('div', 'Step 1 body')}] // Pass in array of step objects 
-    , h('p', 'You have completed the wizard!')
-    )
+    h('div', [
+      wizard.index(
+        state.wizard // state
+      , [h('label', 'one'), h('label', 'two')] // content
+      )
+    , wizard.body(
+        state.wizard // state
+      , [h('div', 'content one'), h('div', 'content two')] // content
+      , h('p', 'You have completed the wizard!') // followup
+      )
+    ])
 ```
-
 
 #### step/form validation
 
