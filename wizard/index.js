@@ -23,33 +23,17 @@ var init = function init(state) {
   return state;
 };
 
-// each step object has a name and body
-// followup is just snabbdom content
-var view = function view(state, steps, followup) {
-  var stepNames = R.map(R.prop('name'), steps);
-  var stepBodies = R.map(R.prop('body'), steps);
-  return h('div', {
-    attrs: { 'data-ff-wizard-body': state.isCompleted$() ? 'complete' : 'incomplete' }
-  }, [stepIndex(state, stepNames), body(state, stepBodies), followupDiv(state, followup || '')]);
-};
-
-var followupDiv = function followupDiv(state, content) {
-  return h('div', {
-    attrs: { 'data-ff-wizard-followup': state.isCompleted$() ? 'complete' : 'incomplete' }
-  }, [content]);
-};
-
-var stepIndex = function stepIndex(state, stepNames) {
-  var width = 100 / stepNames.length + '%';
-  var stepHeaders = mapIndex(stepHeader(state, width), stepNames);
+// index view for keeping track of step 
+// content should be an array of vnodes or strings 
+var index = function index(state, content) {
+  var width = 100 / content.length + '%';
   return h('div', {
     attrs: { 'data-ff-wizard-index': state.isCompleted$() ? 'complete' : 'incomplete' }
-  }, stepHeaders);
+  }, mapIndex(indexStep(state, width), content));
 };
 
-// A step label/header thing to go in the step index/listing
-var stepHeader = function stepHeader(state, width) {
-  return function (name, idx) {
+var indexStep = function indexStep(state, width) {
+  return function (content, idx) {
     return h('span', {
       style: { width: width },
       attrs: {
@@ -58,18 +42,24 @@ var stepHeader = function stepHeader(state, width) {
       on: { click: function click(ev) {
           return state.jump$([idx, state.currentStep$()]);
         } }
-    }, name);
+    }, [content]);
   };
 };
 
-var body = function body(state, stepBodies) {
-  var bodyDivs = mapIndex(stepBody(state), stepBodies);
+// content should be an array of vnodes or strings
+var body = function body(state, content, followup) {
   return h('div', {
-    attrs: { 'data-ff-wizard-steps': state.isCompleted$() ? 'complete' : 'incomplete' }
-  }, bodyDivs);
+    attrs: { 'data-ff-wizard-body': state.isCompleted$() ? 'complete' : 'incomplete' }
+  }, [bodySteps(state, content), followupDiv(state, followup || '')]);
 };
 
-var stepBody = function stepBody(state) {
+var bodySteps = function bodySteps(state, content) {
+  return h('div', {
+    attrs: { 'data-ff-wizard-steps': state.isCompleted$() ? 'complete' : 'incomplete' }
+  }, mapIndex(bodyStepDiv(state), content));
+};
+
+var bodyStepDiv = function bodyStepDiv(state) {
   return function (content, idx) {
     return h('div', {
       attrs: { 'data-ff-wizard-body-step': state.currentStep$() === idx ? 'current' : 'not-current' }
@@ -77,5 +67,11 @@ var stepBody = function stepBody(state) {
   };
 };
 
-module.exports = { view: view, init: init };
+var followupDiv = function followupDiv(state, content) {
+  return h('div', {
+    attrs: { 'data-ff-wizard-followup': state.isCompleted$() ? 'complete' : 'incomplete' }
+  }, [content]);
+};
+
+module.exports = { index: index, body: body, init: init };
 
