@@ -1,6 +1,6 @@
 {
   "name": "ff-core",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Flimflam core UI components",
   "main": "index.js",
   "dependencies": {
