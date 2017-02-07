@@ -41,8 +41,9 @@ test('it appends an error message when the field is invalid', t => {
   const input = streams.dom$().querySelector('input')
   input.value = 'xyz'
   input.dispatchEvent(change)
-  const errElm = streams.dom$().querySelector('[data-ff-field-error]')
-  t.equal(errElm.textContent, streams.state.messages.email)
+  const err = streams.dom$().querySelector('[data-ff-field-error]')
+    .getAttribute('data-ff-field-error')  
+  t.equal(err, streams.state.messages.email)
 })
 
 test("it clears a field's error message on focus", t => {
