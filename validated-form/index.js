@@ -141,14 +141,13 @@ var field = R.curryN(4, function (state, sel) {
     attrs: { 'data-ff-field-input': invalid ? 'invalid' : 'valid' }
   }));
 
-  var errMsg = invalid ? h('p', {
-    hook: { insert: scrollToThis },
-    attrs: { 'data-ff-field-error': invalid ? 'nonempty' : 'empty' }
-  }, err) : '';
-
   return h('div', {
-    attrs: { 'data-ff-field': invalid ? 'invalid' : 'valid' }
-  }, [errMsg, elm]);
+    attrs: {
+      'data-ff-field': invalid ? 'invalid' : 'valid',
+      'data-ff-field-error': err ? err : ''
+    },
+    hook: { insert: scrollToThis }
+  }, [elm]);
 });
 
 var scrollToThis = function scrollToThis(vnode) {
