@@ -10,38 +10,38 @@
 [data-ff-wizard-followup='complete'] {
   display: block;
 }
-[data-ff-wizard-index] {
+[data-ff-wizard-label-wrapper] {
 }
-[data-ff-wizard-index='complete'] {
+[data-ff-wizard-label='complete'] {
   display: none;
 }
-[data-ff-wizard-index='incomplete'] {
+[data-ff-wizard-label='incomplete'] {
   display: block;
 }
-[data-ff-wizard-index-label] {
+[data-ff-wizard-label] {
   display: inline-block;
   text-align: center;
 }
-[data-ff-wizard-index-label='current'] {
+[data-ff-wizard-label='current'] {
   font-weight: bold;
 }
-[data-ff-wizard-index-label='accessible'] {
+[data-ff-wizard-label='accessible'] {
 }
-[data-ff-wizard-index-label='inaccessible'] {
+[data-ff-wizard-label='inaccessible'] {
 }
-[data-ff-wizard-steps] {
+[data-ff-wizard-content-wrapper] {
 }
-[data-ff-wizard-steps='complete'] {
+[data-ff-wizard-content-wrapper='complete'] {
   display: none;
 }
-[data-ff-wizard-steps='incomplete'] {
+[data-ff-wizard-content-wrapper='incomplete'] {
   display: block;
 }
-[data-ff-wizard-body-step] {
+[data-ff-wizard-content] {
 }
-[data-ff-wizard-body-step='not-current'] {
+[data-ff-wizard-content='not-current'] {
   display: none;
 }
-[data-ff-wizard-body-step='current'] {
+[data-ff-wizard-content='current'] {
   display: block;
 }

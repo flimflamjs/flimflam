@@ -23,18 +23,18 @@ const init = state => {
 
 // index view for keeping track of step 
 // content should be an array of vnodes or strings 
-const index = (state, content) => {
+const labels = (state, content) => {
   let width = 100 / content.length + '%'
   return h('div', { 
-    attrs: {'data-ff-wizard-index': state.isCompleted$() ? 'complete' : 'incomplete'}
-  }, mapIndex(indexStep(state, width), content))
+    attrs: {'data-ff-wizard-label-wrapper': state.isCompleted$() ? 'complete' : 'incomplete'}
+  }, mapIndex(labelStep(state, width), content))
 }
 
-const indexStep = (state, width) => (content, idx) => 
+const labelStep = (state, width) => (content, idx) => 
   h('span', {
     style: {width: width}
   , attrs: {
-      'data-ff-wizard-index-label': 
+      'data-ff-wizard-label': 
           state.currentStep$() === idx ? 'current'
         : state.currentStep$() > idx ? 'accessible'
         : 'inaccessible'
@@ -43,9 +43,9 @@ const indexStep = (state, width) => (content, idx) =>
   }, [content])
 
 // content should be an array of vnodes or strings
-const body = (state, content, followup) => 
+const content = (state, content, followup) => 
   h('div', {
-    attrs: {'data-ff-wizard-body': state.isCompleted$() ? 'complete' : 'incomplete'}
+    attrs: {'data-ff-wizard-content-wrapper': state.isCompleted$() ? 'complete' : 'incomplete'}
   }, [
     bodySteps(state, content)
   , followupDiv(state, followup || '')
@@ -58,7 +58,7 @@ const bodySteps = (state, content) =>
 
 const bodyStepDiv = state => (content, idx) =>
   h('div', {
-    attrs: {'data-ff-wizard-body-step': state.currentStep$() === idx ? 'current' : 'not-current'}
+    attrs: {'data-ff-wizard-content': state.currentStep$() === idx ? 'current' : 'not-current'}
   }, [content])
 
 const followupDiv = (state, content) =>
@@ -66,5 +66,5 @@ const followupDiv = (state, content) =>
     attrs: {'data-ff-wizard-followup': state.isCompleted$() ? 'complete' : 'incomplete'}
   }, [content])
 
-module.exports = {index, body, init}
+module.exports = {init, labels, content}
 
