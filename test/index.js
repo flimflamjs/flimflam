@@ -6,3 +6,4 @@ require('../wizard/test')
 require('../notification/test')
 require('../modal/test')
 require('../confirmation/test')
+

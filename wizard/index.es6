@@ -21,58 +21,50 @@ const init = state => {
   return state
 }
 
-// each step object has a name and body
-// followup is just snabbdom content
-const view = (state, steps, followup) => {
-  let stepNames  = R.map(R.prop('name'), steps)
-  let stepBodies = R.map(R.prop('body'), steps)
-  return h('div', {
-    attrs: {'data-ff-wizard-body': state.isCompleted$() ? 'complete' : 'incomplete'}
+// index view for keeping track of step 
+// content should be an array of vnodes or strings 
+const labels = (state, content) => {
+  let width = 100 / content.length + '%'
+  return h('div', { 
+    attrs: {'data-ff-wizard-label-wrapper': state.isCompleted$() ? 'complete' : 'incomplete'}
+  }, mapIndex(labelStep(state, width), content))
+}
+
+const labelStep = (state, width) => (content, idx) => 
+  h('span', {
+    style: {width: width}
+  , attrs: {
+      'data-ff-wizard-label': 
+          state.currentStep$() === idx ? 'current'
+        : state.currentStep$() > idx ? 'accessible'
+        : 'inaccessible'
+    }
+  , on: {click: ev => state.jump$([idx, state.currentStep$()])}
+  }, [content])
+
+// content should be an array of vnodes or strings
+const content = (state, content, followup) => 
+  h('div', {
+    attrs: {'data-ff-wizard-content-wrapper': state.isCompleted$() ? 'complete' : 'incomplete'}
   }, [
-    stepIndex(state, stepNames)
-  , body(state, stepBodies)
+    bodySteps(state, content)
   , followupDiv(state, followup || '')
   ])
-}
+
+const bodySteps = (state, content) => 
+  h('div', {
+    attrs: {'data-ff-wizard-steps': state.isCompleted$() ? 'complete' : 'incomplete' }
+  }, mapIndex(bodyStepDiv(state), content))
+
+const bodyStepDiv = state => (content, idx) =>
+  h('div', {
+    attrs: {'data-ff-wizard-content': state.currentStep$() === idx ? 'current' : 'not-current'}
+  }, [content])
 
 const followupDiv = (state, content) =>
   h('div', {
     attrs: {'data-ff-wizard-followup': state.isCompleted$() ? 'complete' : 'incomplete'}
   }, [content])
 
+module.exports = {init, labels, content}
 
-const stepIndex = (state, stepNames) => {
-  let width = 100 / stepNames.length + '%'
-  let stepHeaders = mapIndex(stepHeader(state, width), stepNames)
-  return h('div', { 
-    attrs: {'data-ff-wizard-index': state.isCompleted$() ? 'complete' : 'incomplete'}
-  }, stepHeaders)
-}
-
-// A step label/header thing to go in the step index/listing
-const stepHeader = (state, width) => (name, idx) => 
-  h('span', {
-    style: {width: width}
-  , attrs: {
-      'data-ff-wizard-index-label': 
-          state.currentStep$() === idx ? 'current'
-        : state.currentStep$() > idx ? 'accessible'
-        : 'inaccessible'
-    }
-  , on: {click: ev => state.jump$([idx, state.currentStep$()])}
-  }, name)
-
-
-const body = (state, stepBodies) => {
-  const bodyDivs = mapIndex(stepBody(state), stepBodies)
-  return h('div', {
-    attrs: {'data-ff-wizard-steps': state.isCompleted$() ? 'complete' : 'incomplete' }
-  }, bodyDivs)
-}
-
-const stepBody = state => (content, idx) =>
-  h('div', {
-    attrs: {'data-ff-wizard-body-step': state.currentStep$() === idx ? 'current' : 'not-current'}
-  }, [content])
-
-module.exports = {view, init}
