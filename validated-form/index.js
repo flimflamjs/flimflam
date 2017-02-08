@@ -145,14 +145,9 @@ var field = R.curryN(4, function (state, sel) {
     attrs: {
       'data-ff-field': invalid ? 'invalid' : 'valid',
       'data-ff-field-error': err ? err : ''
-    },
-    hook: { insert: scrollToThis }
+    }
   }, [elm]);
 });
-
-var scrollToThis = function scrollToThis(vnode) {
-  vnode.elm.scrollIntoView({ block: 'start', behavior: 'smooth' });
-};
 
 // Pass in an array of validation functions and the event object
 // Will return a pair of [name, errorMsg] (errorMsg will be null if no errors present)

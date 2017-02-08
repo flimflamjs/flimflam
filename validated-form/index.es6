@@ -120,13 +120,8 @@ const field = R.curryN(4, (state, sel, data={}, children=[]) => {
       'data-ff-field': invalid ? 'invalid' : 'valid'
     , 'data-ff-field-error': err ? err : ''
     }
-  , hook: {insert: scrollToThis} 
   }, [elm])
 })
-
-const scrollToThis = vnode => {
-  vnode.elm.scrollIntoView({block: 'start', behavior: 'smooth'})
-}
 
 
 // Pass in an array of validation functions and the event object
