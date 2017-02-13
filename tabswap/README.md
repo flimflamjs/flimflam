@@ -11,6 +11,8 @@ Component for swapping out sections of content with some simple navigation.
 
 * `names`: an Array of Strings or Snabbdom nodes that represent labels/titles for each section
 * `active$`: a Flyd stream that contains an integer index representing which label should be active, making all other labels inactive
+* `setWidth`: optional boolean value for setting widths of labels based on number
+  of labels (5 labels will result in each label's width being 20%) 
 
 You will probably want to pass the same `active$` stream to both `tabswap.labels` and `tabswap.content`.
 
@@ -27,6 +29,7 @@ function view(state) {
   , tabswap.labels({
       names: ['a', 'b']
     , active$: activeTab$
+    , setWidth: true
     })
   , tabswap.content({
       sections: [content_a, content_b]
