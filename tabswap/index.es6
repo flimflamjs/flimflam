@@ -8,7 +8,12 @@ const labels = options => {
   options = R.merge({
     names: []
   , active$: flyd.stream(0)
+  , setWidth: false
   }, options)
+
+
+  const width = options.setWidth ? 100 / options.names.length + '%' : false
+
   return h('div', {
     attrs: {
       'data-ff-tabswap': 'active:' + options.active$()
@@ -16,13 +21,14 @@ const labels = options => {
     , 'data-ff-tabswap-labels-count': options.names.length
     }
   },
-    map(labelSingle(options.active$), options.names)
+    map(labelSingle(options.active$, width), options.names)
   )
 }
 
-const labelSingle = active$ => (name, idx) =>
+const labelSingle = (active$, width) => (name, idx) =>
   h('div', {
     attrs: {'data-ff-tabswap-label-wrapper': true}
+  , style: {width: width ?  width : ''}
   }, [
     h("a", {
       on: {click: [active$, idx]}
