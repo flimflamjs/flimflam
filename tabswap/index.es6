@@ -11,8 +11,7 @@ const labels = options => {
   , setWidth: false
   }, options)
 
-
-  const width = options.setWidth ? 100 / options.names.length + '%' : false
+  const width = options.setWidth ? (100 / options.names.length + '%') : ''
 
   return h('div', {
     attrs: {
@@ -28,7 +27,7 @@ const labels = options => {
 const labelSingle = (active$, width) => (name, idx) =>
   h('div', {
     attrs: {'data-ff-tabswap-label-wrapper': true}
-  , style: {width: width ?  width : ''}
+  , style: {width}
   }, [
     h("a", {
       on: {click: [active$, idx]}

@@ -13,7 +13,7 @@ var labels = function labels(options) {
     setWidth: false
   }, options);
 
-  var width = options.setWidth ? 100 / options.names.length + '%' : false;
+  var width = options.setWidth ? 100 / options.names.length + '%' : '';
 
   return h('div', {
     attrs: {
@@ -28,7 +28,7 @@ var labelSingle = function labelSingle(active$, width) {
   return function (name, idx) {
     return h('div', {
       attrs: { 'data-ff-tabswap-label-wrapper': true },
-      style: { width: width ? width : '' }
+      style: { width: width }
     }, [h("a", {
       on: { click: [active$, idx] },
       attrs: {
