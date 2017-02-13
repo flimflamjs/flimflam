@@ -9,21 +9,26 @@ var map = R.addIndex(R.map);
 var labels = function labels(options) {
   options = R.merge({
     names: [],
-    active$: flyd.stream(0)
+    active$: flyd.stream(0),
+    setWidth: false
   }, options);
+
+  var width = options.setWidth ? 100 / options.names.length + '%' : false;
+
   return h('div', {
     attrs: {
       'data-ff-tabswap': 'active:' + options.active$(),
       'data-ff-tabswap-labels': true,
       'data-ff-tabswap-labels-count': options.names.length
     }
-  }, map(labelSingle(options.active$), options.names));
+  }, map(labelSingle(options.active$, width), options.names));
 };
 
-var labelSingle = function labelSingle(active$) {
+var labelSingle = function labelSingle(active$, width) {
   return function (name, idx) {
     return h('div', {
-      attrs: { 'data-ff-tabswap-label-wrapper': true }
+      attrs: { 'data-ff-tabswap-label-wrapper': true },
+      style: { width: width ? width : '' }
     }, [h("a", {
       on: { click: [active$, idx] },
       attrs: {
