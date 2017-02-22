@@ -1,13 +1,14 @@
 {
   "name": "ff-core",
-  "version": "0.4.2",
+  "version": "0.5.0",
   "description": "Flimflam core UI components",
   "main": "index.js",
   "dependencies": {
     "flyd": "0.2.2",
     "form-serialize": "0.7.1",
     "ramda": "0.21.0",
-    "snabbdom": "0.4.2"
+    "snabbdom": "0.4.2",
+    "snabbdom-transform": "0.0.2"
   },
   "devDependencies": {
     "autoprefixer": "6.7.0",

@@ -1,3 +1,4 @@
+const applyTransform = require('snabbdom-transform')
 const R = require('ramda')
 const h = require('snabbdom/h')
 const serializeForm  = require('form-serialize')
@@ -82,47 +83,36 @@ const errorsStream = state => {
 
 // -- Views
 
-const form = R.curryN(4, (state, sel, data={}, children=[]) => {
-  let elm = h('form', data, children)
-  elm.data = R.merge(data, {
+const form = R.curryN(2, (state, node) => {
+  const formTransform = {
     on: {
       submit: ev => {
-        if(data.on && data.on.submit) data.on.submit(ev)
         ev.preventDefault()
         state.submit$(ev.currentTarget)
       }
     }
-  })
-  return elm
+  }
+  return applyTransform(formTransform, node)
 })
 
 
-// A single form field
-// Data takes normal snabbdom data for the input/select/textarea (eg props, style, on)
-const field = R.curryN(4, (state, sel, data={}, children=[]) => {
-  if(!data.props || !data.props.name) throw new Error("You need to provide a field name for validation (using the 'props.name' property)")
-  const err = state.errors$()[data.props.name]
+const field = R.curryN(2, (state, node) => {
+  const name = R.path(['data', 'props', 'name'], node)
+  if(!name) throw new Error("You need to provide a field name for validation (using the 'props.name' property)")
+  const err = state.errors$()[name]
   const invalid = err && err.length
-
-  const elm = h(sel, R.merge(data, {
+  const fieldTransform = {
     on: {
       focus: state.focus$
     , change: ev => state.change$(ev.currentTarget)
     }
-  , props: R.merge({
-      value: state.formData$()[data.props.name]
-    }, data.props)
-  , attrs: {'data-ff-field-input': invalid ? 'invalid' : 'valid'}
-  }))
-
-  return h('div', {
-    attrs: {
-      'data-ff-field': invalid ? 'invalid' : 'valid'
-    , 'data-ff-field-error': err ? err : ''
+  , attrs: {
+      'data-ff-field-input': invalid ? 'invalid' : 'valid'
+    , 'data-ff-field-error': err
     }
-  }, [elm])
+  }
+  return applyTransform(fieldTransform, node)
 })
-
 
 // Pass in an array of validation functions and the event object
 // Will return a pair of [name, errorMsg] (errorMsg will be null if no errors present)
@@ -185,7 +175,7 @@ const defaultMessages = {
   fallback: 'This looks invalid'
 , email: 'Please enter a valid email address'
 , required: 'This field is required'
-, currency: 'Please enter valid currency'
+, currency: 'Please enter valid amount'
 , format: "This doesn't look like the right format"
 , isNumber: 'This should be a number'
 , max: n => `This should be less than ${n}`

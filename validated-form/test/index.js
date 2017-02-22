@@ -8,12 +8,12 @@ const validatedForm = require('../index.es6')
 
 function initForm(state) {
   const view = state => {
-    const form = validatedForm.form(state, 'form', {})
-    const input = validatedForm.field(state, 'input')
-    return form([
-      input({props: {name: 'email'}}, [])
-    , input({props: {name: 'password'}}, [])
-    ])
+    const form = validatedForm.form(state)
+    const input = validatedForm.field(state)
+    return form(h('form', [
+      input(h('input', {props: {name: 'email'}}))
+    , input(h('input', {props: {name: 'password'}}))
+    ]))
   }
   state = validatedForm.init(state)
 

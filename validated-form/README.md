@@ -1,6 +1,6 @@
 # validated-form
 
-A UI component for a form with controllable values and real-time user validation.
+A UI component for a form with real-time user validation.
 
 _Example_:
 
@@ -12,24 +12,19 @@ const constraints = {
 , email: {required: true, email: true}
 }
 
-const init = state => {
-  return {form: validatedForm.init({constraints})}
-}
+const state = validatedForm.init({constraints})
 
 const view = state => {
- const form = validatedForm.form(state.form, 'form.my-form', {})
- const input = validatedForm.field(state.updateForm, 'input.my-input')
- return form([
-   input({props: {name: 'amount', type: 'number'}})
- , input({props: {name: 'email', type: 'text'}})
- ])
+ const form = validatedForm.form(state)
+ const input = validatedForm.field(state)
+ return form(h('form', [
+   input(h('input', {props: {name: 'amount', type: 'number'}}))
+ , input(h('input', {props: {name: 'email', type: 'text'}}))
+ ]))
 }
 ```
-node
 
-**Note** that unlike the snabbdom `h` function, the `validatedForm.form` and `validatedField.field` functions are curried to exactly 4 parameters, so you must pass in all 4 arguments to get the VNode. For example, you must call it like `validatedForm.field(state.from, 'input', {props: {name: 'xyz', type: 'text'}}, [])` with **4** elements to get the VNode to return.
-
-# State init function
+# State initialization
 
 ## validatedForm.init(config)
 
@@ -64,7 +59,7 @@ Default error messages:
 | --- | --- |
 | email | 'Please enter a valid email address' |
 | required | 'This field is required' |
-| currency | 'Please enter valid currency' |
+| currency | 'Please enter a valid amount' |
 | format | "This doesn't look like the right format" |
 | isNumber | 'This should be a number' |
 | max | `This should be less than ${n}` |
@@ -122,39 +117,21 @@ The order of matching error messages is
  * Then, try to find a message for just the field name
  * Then, fall back to the global 'fallback' message
 
-### Controlling form values
-
-A common case is that you need to reset the form, but `form.reset()` on a normal dom node doesn't work well, as it doesn't preserve defaults.
-
-Instead, we can control all the values in a form using an object stream
-
-```js
-const formData$ = flyd.stream({subscribe: true, email: 'uzr1@example.com'})
-validatedForm.init({formData$})
-
-// Now if the formData$ stream is later updated, the input values in the form itself will update:
-formData$({subscribe: false, email: 'uzr2@example.com'})
-```
-
 # View Functions
  
-## validatedForm.form(state, selector, data, children)
+## validatedForm.form(state, vnode)
 
 This creates a snabbdom form node with special functionality for dynamic validation:
 
 - `state` is the state object created by validatedForm.init()
-- `selector` is normal snabbdom tagname + classes, like `form.my-form`
-- `data` is the snabbdom `data` object, containing `props`, `class`, `style`, etc
-- `children` is an array of child nodes inside this form
+- `vnode` is a normal snabbdom form node
 
-## validatedForm.field(state, selector, data, children)
+## validatedForm.field(state, vnode)
 
 This creates a field (input/select/textarea) that will dynamically validate:
 
 - `state` is the state object created by validatedForm.init()
-- `selector` is normal snabbdom tagname + classes, like `input.my-input`
-- `data` is the snabbdom `data` object, containing `props`, `class`, `style`, etc
-- `children` is an array of child nodes inside this field, probably only useful for `<select>` fields
+- `vnode` is a normal snabbdom vnode such as 'input', 'textarea', or 'select'
 
 # Styling
 

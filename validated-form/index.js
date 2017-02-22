@@ -1,5 +1,6 @@
 'use strict';
 
+var applyTransform = require('snabbdom-transform');
 var R = require('ramda');
 var h = require('snabbdom/h');
 var serializeForm = require('form-serialize');
@@ -101,52 +102,36 @@ var errorsStream = function errorsStream(state) {
 
 // -- Views
 
-var form = R.curryN(4, function (state, sel) {
-  var data = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
-  var children = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : [];
-
-  var elm = h('form', data, children);
-  elm.data = R.merge(data, {
+var form = R.curryN(2, function (state, node) {
+  var formTransform = {
     on: {
       submit: function submit(ev) {
-        if (data.on && data.on.submit) data.on.submit(ev);
         ev.preventDefault();
         state.submit$(ev.currentTarget);
       }
     }
-  });
-  return elm;
+  };
+  return applyTransform(formTransform, node);
 });
 
-// A single form field
-// Data takes normal snabbdom data for the input/select/textarea (eg props, style, on)
-var field = R.curryN(4, function (state, sel) {
-  var data = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
-  var children = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : [];
-
-  if (!data.props || !data.props.name) throw new Error("You need to provide a field name for validation (using the 'props.name' property)");
-  var err = state.errors$()[data.props.name];
+var field = R.curryN(2, function (state, node) {
+  var name = R.path(['data', 'props', 'name'], node);
+  if (!name) throw new Error("You need to provide a field name for validation (using the 'props.name' property)");
+  var err = state.errors$()[name];
   var invalid = err && err.length;
-
-  var elm = h(sel, R.merge(data, {
+  var fieldTransform = {
     on: {
       focus: state.focus$,
       change: function change(ev) {
         return state.change$(ev.currentTarget);
       }
     },
-    props: R.merge({
-      value: state.formData$()[data.props.name]
-    }, data.props),
-    attrs: { 'data-ff-field-input': invalid ? 'invalid' : 'valid' }
-  }));
-
-  return h('div', {
     attrs: {
-      'data-ff-field': invalid ? 'invalid' : 'valid',
-      'data-ff-field-error': err ? err : ''
+      'data-ff-field-input': invalid ? 'invalid' : 'valid',
+      'data-ff-field-error': err
     }
-  }, [elm]);
+  };
+  return applyTransform(fieldTransform, node);
 });
 
 // Pass in an array of validation functions and the event object
@@ -205,7 +190,7 @@ var defaultMessages = {
   fallback: 'This looks invalid',
   email: 'Please enter a valid email address',
   required: 'This field is required',
-  currency: 'Please enter valid currency',
+  currency: 'Please enter valid amount',
   format: "This doesn't look like the right format",
   isNumber: 'This should be a number',
   max: function max(n) {
