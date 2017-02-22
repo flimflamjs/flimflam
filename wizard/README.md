@@ -15,11 +15,11 @@ let myWizardState = wizard.init({
 })
 ```
 
-### wizard.index(state, content)
+### wizard.labels(state, content)
 
 The `content` parameter is an array of vnodes or strings for each wizard index. 
 
-### wizard.body(state, content, followup)
+### wizard.content(state, content, followup)
 
 The `content` parameter is an array of vnodes or strings for each wizard body. 
 
