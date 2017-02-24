@@ -1,9 +1,9 @@
-import test from 'tape'
-import R from 'ramda'
-import flyd from 'flyd'
-import render from 'flimflam-render'
-import h from 'snabbdom/h'
-import button from '../index.es6'
+const test = require('tape')
+const R = require('ramda')
+const flyd = require('flyd')
+const render = require('flimflam-render')
+const h = require('snabbdom/h').default
+const button = require('../index.es6')
 
 
 function initButton(state) {

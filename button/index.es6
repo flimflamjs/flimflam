@@ -1,6 +1,6 @@
-import R from 'ramda'
-import h from 'snabbdom/h'
-import flyd from 'flyd'
+const R = require('ramda')
+const h = require('snabbdom/h').default
+const flyd = require('flyd')
 
 // Generate a form submission button with various behavior based on the state
 // Properties of state:

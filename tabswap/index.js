@@ -1,7 +1,7 @@
 'use strict';
 
 var flyd = require('flyd');
-var h = require('snabbdom/h');
+var h = require('snabbdom/h').default;
 var R = require('ramda');
 
 var map = R.addIndex(R.map);

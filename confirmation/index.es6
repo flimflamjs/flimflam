@@ -1,7 +1,7 @@
 const modal = require('../modal/index.es6')
 const R = require('ramda')
 const flyd = require('flyd')
-const h = require('snabbdom/h')
+const h = require('snabbdom/h').default
 
 const init = isOpen$ => {
   const [confirmed$, denied$] = [flyd.stream(), flyd.stream()]

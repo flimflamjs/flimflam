@@ -2,7 +2,7 @@ const test = require('tape')
 const R = require("ramda")
 const flyd = require("flyd")
 const render = require('flimflam-render')
-const h = require('snabbdom/h')
+const h = require('snabbdom/h').default
 
 require('../index.css') // cssify
 const modal = require('../index.es6')

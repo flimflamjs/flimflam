@@ -1,4 +1,4 @@
-const h = require('snabbdom/h')
+const h = require('snabbdom/h').default
 const R = require('ramda')
 
 const flyd = require('flyd')

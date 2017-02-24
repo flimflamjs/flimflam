@@ -1,8 +1,8 @@
+const h = require('snabbdom/h').default
 const test = require('tape')
 const R = require("ramda")
 const flyd = require("flyd")
 const render = require('flimflam-render')
-const h = require('snabbdom/h')
 
 const validatedForm = require('../index.es6')
 
@@ -53,7 +53,7 @@ test("it clears a field's error message on focus", t => {
   const input = streams.dom$().querySelector('input')
   input.value = 'xyz'
   input.dispatchEvent(change)
-  const state1= input.getAttribute('data-ff-field-input')
+  const state1 = input.getAttribute('data-ff-field-input')
   t.equal(state1, 'invalid')
   const focus = new Event('focus')
   input.dispatchEvent(focus)

@@ -1,6 +1,6 @@
-import flyd from 'flyd'
-import h from 'snabbdom/h'
-import R from 'ramda'
+const flyd = require('flyd')
+const h = require('snabbdom/h').default
+const R = require('ramda')
 flyd.flatMap = require('flyd/module/flatmap')
 flyd.afterSilence = require('flyd/module/aftersilence')
 
@@ -8,8 +8,6 @@ flyd.afterSilence = require('flyd/module/aftersilence')
 // pseudocode example with a 1000ms delay:
 // {[message1, 0ms], [message2, 5000ms]}
 // {[message1, 0ms], [null, 1000ms], [message2, 5000ms], [null, 6000ms]}
-
-const log = R.curryN(2, console.log.bind(console))
 
 function init(state) {
   state = R.merge({hideDelay: 5000, message$: flyd.stream()}, state || {})

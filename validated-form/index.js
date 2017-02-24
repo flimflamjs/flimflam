@@ -1,9 +1,9 @@
 'use strict';
 
-var applyTransform = require('snabbdom-transform');
 var R = require('ramda');
-var h = require('snabbdom/h');
+var h = require('snabbdom/h').default;
 var serializeForm = require('form-serialize');
+var mergeVNodes = require('snabbdom-merge');
 
 var flyd = require('flyd');
 flyd.filter = require('flyd/module/filter');
@@ -34,84 +34,80 @@ var currencyRegex = require('./currency-regex');
 // {name: 'Please enter your name'}
 // {required: 'This is required'}
 
-function init(config) {
-  config = config || {};
-  var state = {
-    focus$: flyd.stream(),
-    change$: flyd.stream(),
-    submit$: flyd.stream(),
-    formData$: config.formData$ || flyd.stream({})
-  };
-  state.validators = R.merge(defaultValidators, config.validators || {});
-  state.messages = R.merge(defaultMessages, config.messages || {});
-  state.constraints = config.constraints || {};
+function init() {
+  var config = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
-  var fieldErr$ = flyd.map(validateField(state), state.change$);
-  var submitErr$ = flyd.map(validateForm(state), state.submit$);
-  var formErr$ = flyd.filter(R.identity, submitErr$);
-  // Clear all errors on input focus
-  var clearErr$ = flyd.map(function (ev) {
-    return [ev.target.name, null];
-  }, state.focus$);
-  // stream of error pairs of [field_name, error_message]
-  var allErrs$ = flyd.mergeAll([fieldErr$, formErr$, clearErr$]);
+  var validators = R.merge(defaultValidators, config.validators || {});
+  var messages = R.merge(defaultMessages, config.messages || {});
+  var constraints = config.constraints || {};
+
   // Stream of all errors scanned into one object
-  state.errors$ = flyd.scan(function (data, pair) {
-    return R.assoc(pair[0], pair[1], data);
-  }, {}, allErrs$);
+  var errors$ = flyd.stream({});
 
-  // Stream of field names and new values
-  state.nameVal$ = flyd.map(function (node) {
-    return [node.name, node.value];
-  }, state.change$);
   // Stream of all user-inputted data scanned into one object
-  state.userData$ = flyd.scanMerge([[state.nameVal$, function (data, pair) {
-    return R.assoc(pair[0], pair[1], data);
-  }] // change sets a single key/val into data
-  , [state.submit$, function (data, form) {
-    return serializeForm(form, { hash: true });
-  }] // submit overrides all data by serializing the whole form
-  ], state.formData$() || {});
+  var data$ = flyd.stream({});
+  var invalidSubmit$ = flyd.stream();
+  var validSubmit$ = flyd.stream();
+  var validData$ = flyd.stream();
 
-  state.invalidSubmit$ = flyd.filter(R.apply(function (key, val) {
-    return val;
-  }), submitErr$);
-  state.validSubmit$ = flyd.filter(R.apply(function (key, val) {
-    return !val;
-  }), submitErr$);
-  state.validData$ = flyd.sampleOn(state.validSubmit$, state.userData$);
-
-  return state;
+  return {
+    constraints: constraints,
+    validators: validators,
+    messages: messages,
+    errors$: errors$,
+    validSubmit$: validSubmit$,
+    validData$: validData$,
+    data$: data$,
+    invalidSubmit$: invalidSubmit$
+  };
 }
 
-// Generate a stream of objects of errors
-var errorsStream = function errorsStream(state) {
-  var fieldErr$ = flyd.map(validateField(state), state.change$);
-  var formErr$ = flyd.filter(R.identity, flyd.map(validateForm(state), state.submit$));
-  // Clear all errors on input focus
-  var clearErr$ = flyd.map(function (ev) {
-    return [ev.target.name, null];
-  }, state.focus$);
-  // stream of error pairs of [field_name, error_message]
-  var allErrs$ = flyd.mergeAll([fieldErr$, formErr$, clearErr$]);
-  // Stream of all errors scanned into one object
-  return flyd.scan(function (data, pair) {
-    return R.assoc(pair[0], pair[1], data);
-  }, {}, allErrs$);
+var handleSubmit = function handleSubmit(state) {
+  return function (ev) {
+    ev.preventDefault();
+    var err = validateForm(state, ev.currentTarget);
+    var data = serializeForm(ev.currentTarget, { hash: true });
+    state.data$(data);
+    if (err) {
+      var updatedErrors = R.assoc(err[0], err[1], state.errors$());
+      state.errors$(updatedErrors);
+      state.invalidSubmit$(true);
+    } else {
+      state.validSubmit$(true);
+      state.validData$(data);
+    }
+  };
+};
+
+var handleChange = function handleChange(state) {
+  return function (ev) {
+    var err = validateField(state, ev.currentTarget);
+    if (err) {
+      var updatedErrors = R.assoc(err[0], err[1], state.errors$());
+      state.errors$(updatedErrors);
+    }
+    var _ref = [ev.currentTarget.name, ev.currentTarget.value],
+        name = _ref[0],
+        value = _ref[1];
+
+    var updatedData = R.assoc(name, value, state.data$());
+    state.data$(updatedData);
+  };
+};
+
+var handleFocus = function handleFocus(state) {
+  return function (ev) {
+    // Clear errors on input focus
+    state.errors$({});
+  };
 };
 
 // -- Views
 
 var form = R.curryN(2, function (state, node) {
-  var formTransform = {
-    on: {
-      submit: function submit(ev) {
-        ev.preventDefault();
-        state.submit$(ev.currentTarget);
-      }
-    }
-  };
-  return applyTransform(formTransform, node);
+  var vform = h('form', { on: { submit: handleSubmit(state) } });
+  var merged = mergeVNodes(vform, node);
+  return merged;
 });
 
 var field = R.curryN(2, function (state, node) {
@@ -119,24 +115,22 @@ var field = R.curryN(2, function (state, node) {
   if (!name) throw new Error("You need to provide a field name for validation (using the 'props.name' property)");
   var err = state.errors$()[name];
   var invalid = err && err.length;
-  var fieldTransform = {
+  var vfield = h(node.sel, {
     on: {
-      focus: state.focus$,
-      change: function change(ev) {
-        return state.change$(ev.currentTarget);
-      }
+      focus: handleFocus(state),
+      change: handleChange(state)
     },
     attrs: {
       'data-ff-field-input': invalid ? 'invalid' : 'valid',
       'data-ff-field-error': err
     }
-  };
-  return applyTransform(fieldTransform, node);
+  });
+  return mergeVNodes(vfield, node);
 });
 
 // Pass in an array of validation functions and the event object
 // Will return a pair of [name, errorMsg] (errorMsg will be null if no errors present)
-var validateField = R.curry(function (state, node) {
+var validateField = R.curryN(2, function (state, node) {
   var value = node.value;
   var name = node.name;
   if (!state.constraints[name]) return [name, null]; // no validators for this field present
@@ -149,7 +143,7 @@ var validateField = R.curry(function (state, node) {
     var arg = state.constraints[name][valName];
     if (!state.validators[valName]) {
       console.warn("Form validation constraint does not exist:", valName);
-    } else if (!state.validators[valName](value, arg, state.userData$())) {
+    } else if (!state.validators[valName](value, arg, state.data$())) {
       var msg = getErrMsg(state.messages, name, valName, arg);
       return [name, String(msg)];
     }
@@ -159,11 +153,11 @@ var validateField = R.curry(function (state, node) {
 
 // Retrieve errors for the entire set of form data, used on form submit events,
 // using the form data saved into the state
-var validateForm = R.curry(function (state, node) {
+var validateForm = R.curryN(2, function (state, node) {
   var formData = serializeForm(node, { hash: true });
   // For every field name in the provided contraints
   for (var fieldName in state.constraints) {
-    var value = state.userData$()[fieldName];
+    var value = state.data$()[fieldName];
     // Skip the validation of non-required fields that are missing
     if (state.constraints[fieldName] && (state.constraints[fieldName].required || !valIsUnset(value))) {
       for (var valName in state.constraints[fieldName]) {

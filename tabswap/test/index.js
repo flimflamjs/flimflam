@@ -1,7 +1,7 @@
 const flyd = require('flyd')
 const R = require('ramda')
 const test = require('tape')
-const h = require('snabbdom/h')
+const h = require('snabbdom/h').default
 const tabswap = require('../index.es6')
 const render = require('flimflam-render')
 

@@ -1,5 +1,5 @@
 const R = require('ramda')
-const h = require('snabbdom/h')
+const h = require('snabbdom/h').default
 const flyd = require('flyd')
 flyd.filter = require('flyd/module/filter')
 const mapIndex = R.addIndex(R.map)

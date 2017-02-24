@@ -1,5 +1,5 @@
 const flyd = require('flyd')
-const h = require('snabbdom/h')
+const h = require('snabbdom/h').default
 const R = require('ramda')
 
 function view(state) {

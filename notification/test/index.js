@@ -1,7 +1,7 @@
 const test = require('tape')
 const flyd = require("flyd")
 const render = require('flimflam-render')
-const h = require('snabbdom/h')
+const h = require('snabbdom/h').default
 
 const notification = require('../index.es6')
 

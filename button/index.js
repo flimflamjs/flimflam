@@ -1,18 +1,8 @@
 'use strict';
 
-var _ramda = require('ramda');
-
-var _ramda2 = _interopRequireDefault(_ramda);
-
-var _h = require('snabbdom/h');
-
-var _h2 = _interopRequireDefault(_h);
-
-var _flyd = require('flyd');
-
-var _flyd2 = _interopRequireDefault(_flyd);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+var R = require('ramda');
+var h = require('snabbdom/h').default;
+var flyd = require('flyd');
 
 // Generate a form submission button with various behavior based on the state
 // Properties of state:
@@ -23,18 +13,18 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 module.exports = function (state) {
   // Set defaults
-  state = _ramda2.default.merge({
+  state = R.merge({
     loadingText: 'Saving...',
     buttonText: 'Submit',
-    error$: _flyd2.default.stream(),
-    loading$: _flyd2.default.stream()
+    error$: flyd.stream(),
+    loading$: flyd.stream()
   }, state);
 
-  return (0, _h2.default)('div', {
+  return h('div', {
     attrs: { 'data-ff-button-wrapper': state.error$() ? 'error' : '' }
-  }, [(0, _h2.default)('p', {
+  }, [h('p', {
     attrs: { 'data-ff-button-error': state.error$() ? 'error' : '' }
-  }, state.error$()), (0, _h2.default)('button', {
+  }, state.error$()), h('button', {
     props: { type: 'submit', disabled: state.loading$() },
     attrs: { 'data-ff-button': state.loading$() ? 'loading' : '' }
   }, [state.loading$() ? state.loadingText : state.buttonText])]);

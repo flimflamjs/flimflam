@@ -3,7 +3,7 @@
 var modal = require('../modal/index.es6');
 var R = require('ramda');
 var flyd = require('flyd');
-var h = require('snabbdom/h');
+var h = require('snabbdom/h').default;
 
 var init = function init(isOpen$) {
   var _ref = [flyd.stream(), flyd.stream()],
