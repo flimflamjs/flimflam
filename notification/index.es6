@@ -25,7 +25,7 @@ function init(state) {
 function view(state) {
   return h('div', {
     attrs: {'data-ff-notification': state.msg$() ? 'shown' : 'hidden'}
-  }, state.msg$() ? String(state.msg$()) : '' )
+  }, [ state.msg$() || '' ])
 }
 
 module.exports = {view, init}
