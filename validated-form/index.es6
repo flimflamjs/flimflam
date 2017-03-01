@@ -26,17 +26,17 @@ function init(config={}) {
   // Partially apply validate function to configure it
   const validateChangeConfigured = validateChange({constraints, validators, messages, data$})
   const validateSubmitConfigured = validateSubmit({constraints, validators, messages})
+  const submitErrs$ = flyd.map(validateSubmitConfigured, events.submit$)
   // Stream of an object of error messages, where the keys are field names and values are string error messages
   const errors$ = flyd.scanMerge([
     [events.change$, validateChangeConfigured]
-  , [events.focus$,  R.always({})]
-  , [events.submit$, validateSubmitConfigured]
+  , [events.focus$,  clearError]
+  , [submitErrs$,    (errs, newErrs) => newErrs]
   ], {})
 
   // Stream of all user-inputted data scanned into one object
-  const submitErrs$ = flyd.sampleOn(events.submit$, errors$)
-  const validSubmit$ = flyd.filter(R.empty, submitErrs$)
-  const notEmpty = R.compose(R.not, R.empty)
+  const validSubmit$ = flyd.filter(R.isEmpty, submitErrs$)
+  const notEmpty = R.compose(R.not, R.isEmpty)
   const invalidSubmit$ = flyd.filter(notEmpty, submitErrs$)
   const validData$ = flyd.sampleOn(validSubmit$, data$)
 
@@ -53,6 +53,11 @@ function init(config={}) {
   }
 }
 
+const clearError = (errors, focusEvent) => {
+  const node = focusEvent.currentTarget
+  return R.dissoc(node.name, errors)
+}
+
 const validateChange = config => (errors, changeEvent) => {
   const node = changeEvent.currentTarget
   const [fieldName, value] = [node.name, node.value]
@@ -60,7 +65,8 @@ const validateChange = config => (errors, changeEvent) => {
   return validateField(config, errors, fieldName, value)
 }
 
-const validateSubmit = config => (errors, submitEvent) => {
+const validateSubmit = config => (submitEvent) => {
+  var errors = {}
   const node = submitEvent.currentTarget
   config.fullData = serializeForm(node, {hash: true})
   for(const fieldName in config.constraints) {
@@ -110,7 +116,7 @@ const handleFocus = state => ev => {
 // -- Views
 
 const form = R.curryN(2, (state, node) => {
-  const vform = h('form', {on: {submit: state.events.submit$}})
+  const vform = h('form', {on: {submit: ev => {ev.preventDefault(); state.events.submit$(ev)}}})
   return mergeVNodes(vform, node)
 })
 

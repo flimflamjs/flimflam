@@ -29,13 +29,15 @@ function init() {
   // Partially apply validate function to configure it
   var validateChangeConfigured = validateChange({ constraints: constraints, validators: validators, messages: messages, data$: data$ });
   var validateSubmitConfigured = validateSubmit({ constraints: constraints, validators: validators, messages: messages });
+  var submitErrs$ = flyd.map(validateSubmitConfigured, events.submit$);
   // Stream of an object of error messages, where the keys are field names and values are string error messages
-  var errors$ = flyd.scanMerge([[events.change$, validateChangeConfigured], [events.focus$, R.always({})], [events.submit$, validateSubmitConfigured]], {});
+  var errors$ = flyd.scanMerge([[events.change$, validateChangeConfigured], [events.focus$, clearError], [submitErrs$, function (errs, newErrs) {
+    return newErrs;
+  }]], {});
 
   // Stream of all user-inputted data scanned into one object
-  var submitErrs$ = flyd.sampleOn(events.submit$, errors$);
-  var validSubmit$ = flyd.filter(R.empty, submitErrs$);
-  var notEmpty = R.compose(R.not, R.empty);
+  var validSubmit$ = flyd.filter(R.isEmpty, submitErrs$);
+  var notEmpty = R.compose(R.not, R.isEmpty);
   var invalidSubmit$ = flyd.filter(notEmpty, submitErrs$);
   var validData$ = flyd.sampleOn(validSubmit$, data$);
 
@@ -52,6 +54,11 @@ function init() {
   };
 }
 
+var clearError = function clearError(errors, focusEvent) {
+  var node = focusEvent.currentTarget;
+  return R.dissoc(node.name, errors);
+};
+
 var validateChange = function validateChange(config) {
   return function (errors, changeEvent) {
     var node = changeEvent.currentTarget;
@@ -65,7 +72,8 @@ var validateChange = function validateChange(config) {
 };
 
 var validateSubmit = function validateSubmit(config) {
-  return function (errors, submitEvent) {
+  return function (submitEvent) {
+    var errors = {};
     var node = submitEvent.currentTarget;
     config.fullData = serializeForm(node, { hash: true });
     for (var fieldName in config.constraints) {
@@ -118,7 +126,9 @@ var handleFocus = function handleFocus(state) {
 // -- Views
 
 var form = R.curryN(2, function (state, node) {
-  var vform = h('form', { on: { submit: state.events.submit$ } });
+  var vform = h('form', { on: { submit: function submit(ev) {
+        ev.preventDefault();state.events.submit$(ev);
+      } } });
   return mergeVNodes(vform, node);
 });
 
