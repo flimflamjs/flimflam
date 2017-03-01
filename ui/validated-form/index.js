@@ -6,7 +6,6 @@ var mergeVNodes = require('snabbdom-merge')
 var flyd  = require('flyd')
 flyd.filter = require('flyd/module/filter')
 flyd.mergeAll = require('flyd/module/mergeall')
-flyd.sampleOn = require('flyd/module/sampleon')
 flyd.scanMerge = require('flyd/module/scanmerge')
 //local
 var emailRegex = require('./lib/email-regex')
@@ -14,32 +13,27 @@ var currencyRegex = require('./lib/currency-regex')
 
 function init(config={}) {
   var events = {change$: flyd.stream(), submit$: flyd.stream(), focus$: flyd.stream()}
-  var userData = config.userData || flyd.stream()
   var constraints = config.constraints
   var messages = R.merge(defaultMessages, config.messages)
   var validators = R.merge(defaultValidators, config.validators)
-  var data$ = flyd.scanMerge([
-    [config.data$,           function(data, newData) {return newData}]
-  , [events.change$,         setChangedData]
-  ], {})
 
-  // Partially apply validate function to configure it
-  var conf = {constraints: constraints, validators: validators, messages: messages, data$: data$}
-  var validateChangeConfigured = validateChange(conf)
-  var validateSubmitConfigured = validateSubmit(conf)
-  var submitErrs$ = flyd.map(validateSubmitConfigured, events.submit$)
+  var serialize = function(ev) { return serializeForm(ev.currentTarget, {hash: true}) }
+  var submitData$ = flyd.map(serialize, events.submit$)
+
+  var conf = {constraints: constraints, validators: validators, messages: messages}
+  var submitErrs$ = flyd.map(validateSubmitData(conf), submitData$)
   // Stream of an object of error messages, where the keys are field names and values are string error messages
   var errors$ = flyd.scanMerge([
-    [events.change$, validateChangeConfigured]
-  , [events.focus$,  clearError]
+    [events.focus$,  clearError]
   , [submitErrs$,    function(errs, newErrs) {return newErrs}]
+  , [events.change$, validateChange(conf)]
   ], {})
 
   // Stream of all user-inputted data scanned into one object
   var validSubmit$ = flyd.filter(R.isEmpty, submitErrs$)
   var notEmpty = R.compose(R.not, R.isEmpty)
   var invalidSubmit$ = flyd.filter(notEmpty, submitErrs$)
-  var validData$ = flyd.sampleOn(validSubmit$, data$)
+  var validData$ = flyd.map(function() { return submitData$() }, validSubmit$)
 
   return {
     constraints: constraints
@@ -48,7 +42,6 @@ function init(config={}) {
   , errors$: errors$
   , validSubmit$: validSubmit$
   , validData$: validData$
-  , data$: data$
   , invalidSubmit$: invalidSubmit$
   , events: events
   }
@@ -61,16 +54,14 @@ var clearError = function(errors, focusEvent) {
 
 var validateChange = R.curryN(3, function(config, errors, changeEvent) {
   var node = changeEvent.currentTarget
-  config.fullData = config.data$()
   return validateField(config, errors, node.name, node.value)
 })
 
-var validateSubmit = R.curryN(2, function(config, submitEvent) {
+var validateSubmitData = R.curryN(2, function(config, data) {
   var errors = {}
-  var node = submitEvent.currentTarget
-  config.fullData = serializeForm(node, {hash: true})
+  config.fullData = data
   for(var fieldName in config.constraints) {
-    var value = config.fullData[fieldName]
+    var value = data[fieldName]
     errors = validateField(config, errors, fieldName, value)
   }
   // For loop completed: no additional errors found
@@ -101,11 +92,6 @@ var getErrorMessage = function(config, validatorName, fieldName, value, fullData
     }
   }
   return false
-}
-
-var setChangedData = function(data, changeEvent) {
-  var node = changeEvent.currentTarget
-  return R.assoc(node.name, node.value, data)
 }
 
 // -- Views
