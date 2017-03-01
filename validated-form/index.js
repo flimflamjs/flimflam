@@ -1,54 +1,43 @@
 'use strict';
 
+//npm
 var R = require('ramda');
 var h = require('snabbdom/h').default;
 var serializeForm = require('form-serialize');
 var mergeVNodes = require('snabbdom-merge');
-
 var flyd = require('flyd');
 flyd.filter = require('flyd/module/filter');
 flyd.mergeAll = require('flyd/module/mergeall');
 flyd.sampleOn = require('flyd/module/sampleon');
 flyd.scanMerge = require('flyd/module/scanmerge');
-
+//local
 var emailRegex = require('./email-regex');
 var currencyRegex = require('./currency-regex');
-
-// constraints: a hash of key/vals where each key is the name of an input
-// and each value is an object of validator names and arguments
-//
-// validators: a hash of validation names mapped to boolean functions
-//
-// messages: a hash of validator names and field names mapped to error messages 
-//
-// messages match to validation errors hierarchically:
-// - first checks if there is an exact match on both field name and validator name
-// - then checks for a match on just the field name
-// - then checks for a match on the validator name
-//
-// Given a constraint like:
-// {name: {required: true}}
-//
-// All of the following will set an error for above, starting with most specific first:
-// {name: {required: 'Please enter a valid name'}
-// {name: 'Please enter your name'}
-// {required: 'This is required'}
 
 function init() {
   var config = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
-  var validators = R.merge(defaultValidators, config.validators || {});
-  var messages = R.merge(defaultMessages, config.messages || {});
-  var constraints = config.constraints || {};
+  var events = { change$: flyd.stream(), submit$: flyd.stream(), focus$: flyd.stream() };
+  var userData = config.userData || flyd.stream();
+  var constraints = config.constraints;
+  var messages = R.merge(defaultMessages, config.messages);
+  var validators = R.merge(defaultValidators, config.validators);
+  var data$ = flyd.scanMerge([[config.data$, function (data, newData) {
+    return newData;
+  }], [events.change$, setChangedData]], {});
 
-  // Stream of all errors scanned into one object
-  var errors$ = flyd.stream({});
+  // Partially apply validate function to configure it
+  var validateChangeConfigured = validateChange({ constraints: constraints, validators: validators, messages: messages, data$: data$ });
+  var validateSubmitConfigured = validateSubmit({ constraints: constraints, validators: validators, messages: messages });
+  // Stream of an object of error messages, where the keys are field names and values are string error messages
+  var errors$ = flyd.scanMerge([[events.change$, validateChangeConfigured], [events.focus$, R.always({})], [events.submit$, validateSubmitConfigured]], {});
 
   // Stream of all user-inputted data scanned into one object
-  var data$ = flyd.stream({});
-  var invalidSubmit$ = flyd.stream();
-  var validSubmit$ = flyd.stream();
-  var validData$ = flyd.stream();
+  var submitErrs$ = flyd.sampleOn(events.submit$, errors$);
+  var validSubmit$ = flyd.filter(R.empty, submitErrs$);
+  var notEmpty = R.compose(R.not, R.empty);
+  var invalidSubmit$ = flyd.filter(notEmpty, submitErrs$);
+  var validData$ = flyd.sampleOn(validSubmit$, data$);
 
   return {
     constraints: constraints,
@@ -58,41 +47,65 @@ function init() {
     validSubmit$: validSubmit$,
     validData$: validData$,
     data$: data$,
-    invalidSubmit$: invalidSubmit$
+    invalidSubmit$: invalidSubmit$,
+    events: events
   };
 }
 
-var handleSubmit = function handleSubmit(state) {
-  return function (ev) {
-    ev.preventDefault();
-    var err = validateForm(state, ev.currentTarget);
-    var data = serializeForm(ev.currentTarget, { hash: true });
-    state.data$(data);
-    if (err) {
-      var updatedErrors = R.assoc(err[0], err[1], state.errors$());
-      state.errors$(updatedErrors);
-      state.invalidSubmit$(true);
-    } else {
-      state.validSubmit$(true);
-      state.validData$(data);
-    }
+var validateChange = function validateChange(config) {
+  return function (errors, changeEvent) {
+    var node = changeEvent.currentTarget;
+    var _ref = [node.name, node.value],
+        fieldName = _ref[0],
+        value = _ref[1];
+
+    config.fullData = config.data$();
+    return validateField(config, errors, fieldName, value);
   };
 };
 
-var handleChange = function handleChange(state) {
-  return function (ev) {
-    var err = validateField(state, ev.currentTarget);
-    if (err) {
-      var updatedErrors = R.assoc(err[0], err[1], state.errors$());
-      state.errors$(updatedErrors);
+var validateSubmit = function validateSubmit(config) {
+  return function (errors, submitEvent) {
+    var node = submitEvent.currentTarget;
+    config.fullData = serializeForm(node, { hash: true });
+    for (var fieldName in config.constraints) {
+      var value = config.fullData[fieldName];
+      errors = validateField(config, errors, fieldName, value);
     }
-    var _ref = [ev.currentTarget.name, ev.currentTarget.value],
-        name = _ref[0],
-        value = _ref[1];
-
-    var updatedData = R.assoc(name, value, state.data$());
-    state.data$(updatedData);
+    // For loop completed: no additional errors found
+    return errors;
   };
+};
+
+var validateField = function validateField(config, errors, fieldName, value) {
+  // Do not validate non-required blank fields
+  if (!config.constraints[fieldName] || !config.constraints[fieldName].required && valIsUnset(value)) return errors;
+  // Find the first constraint that fails its validator 
+  for (var validatorName in config.constraints[fieldName]) {
+    var err = getErrorMessage(config, validatorName, fieldName, value, config.fullData);
+    if (err) return R.assoc(fieldName, err, errors);
+  }
+  // For loop completed: no additional errors found
+  return errors;
+};
+
+// Returns an error message if invalid and false if valid
+var getErrorMessage = function getErrorMessage(config, validatorName, fieldName, value, fullData) {
+  var arg = config.constraints[fieldName][validatorName];
+  if (config.validators[validatorName]) {
+    var isValid = config.validators[validatorName](value, arg, fullData);
+    if (!isValid) {
+      return getErrMsg(config.messages, fieldName, validatorName, arg);
+    }
+  }
+  return false;
+};
+
+var setChangedData = function setChangedData(data, changeEvent) {
+  var node = changeEvent.currentTarget;
+  var name = node.name;
+  var value = node.value;
+  return R.assoc(name, value, data);
 };
 
 var handleFocus = function handleFocus(state) {
@@ -105,9 +118,8 @@ var handleFocus = function handleFocus(state) {
 // -- Views
 
 var form = R.curryN(2, function (state, node) {
-  var vform = h('form', { on: { submit: handleSubmit(state) } });
-  var merged = mergeVNodes(vform, node);
-  return merged;
+  var vform = h('form', { on: { submit: state.events.submit$ } });
+  return mergeVNodes(vform, node);
 });
 
 var field = R.curryN(2, function (state, node) {
@@ -117,8 +129,8 @@ var field = R.curryN(2, function (state, node) {
   var invalid = err && err.length;
   var vfield = h(node.sel, {
     on: {
-      focus: handleFocus(state),
-      change: handleChange(state)
+      focus: state.events.focus$,
+      change: state.events.change$
     },
     attrs: {
       'data-ff-field-input': invalid ? 'invalid' : 'valid',
@@ -128,55 +140,10 @@ var field = R.curryN(2, function (state, node) {
   return mergeVNodes(vfield, node);
 });
 
-// Pass in an array of validation functions and the event object
-// Will return a pair of [name, errorMsg] (errorMsg will be null if no errors present)
-var validateField = R.curryN(2, function (state, node) {
-  var value = node.value;
-  var name = node.name;
-  if (!state.constraints[name]) return [name, null]; // no validators for this field present
-
-  // Do not validate non-required blank fields
-  if (!state.constraints[name].required && valIsUnset(value)) return [name, null];
-
-  // Find the first constraint that fails its validator 
-  for (var valName in state.constraints[name]) {
-    var arg = state.constraints[name][valName];
-    if (!state.validators[valName]) {
-      console.warn("Form validation constraint does not exist:", valName);
-    } else if (!state.validators[valName](value, arg, state.data$())) {
-      var msg = getErrMsg(state.messages, name, valName, arg);
-      return [name, String(msg)];
-    }
-  }
-  return [name, null]; // no error found
-});
-
-// Retrieve errors for the entire set of form data, used on form submit events,
-// using the form data saved into the state
-var validateForm = R.curryN(2, function (state, node) {
-  var formData = serializeForm(node, { hash: true });
-  // For every field name in the provided contraints
-  for (var fieldName in state.constraints) {
-    var value = state.data$()[fieldName];
-    // Skip the validation of non-required fields that are missing
-    if (state.constraints[fieldName] && (state.constraints[fieldName].required || !valIsUnset(value))) {
-      for (var valName in state.constraints[fieldName]) {
-        var arg = state.constraints[fieldName][valName];
-        if (!state.validators[valName]) {
-          console.warn("Form validator function does not exist:", valName);
-        } else if (!state.validators[valName](value, arg, formData)) {
-          var msg = getErrMsg(state.messages, fieldName, valName, arg);
-          return [fieldName, String(msg)];
-        }
-      }
-    }
-  }
-});
-
 // Given the messages object, the field name, and the validator name, and the validator argument
 // Retrieve and apply the error message function
-var getErrMsg = function getErrMsg(messages, name, valName, arg) {
-  var err = messages[name] && messages[name][valName] ? messages[name][valName] : messages[valName] ? messages[valName] : messages[name] ? messages[name] : messages.fallback;
+var getErrMsg = function getErrMsg(messages, name, validatorName, arg) {
+  var err = messages[name] && messages[name][validatorName] ? messages[name][validatorName] : messages[validatorName] ? messages[validatorName] : messages[name] ? messages[name] : messages.fallback;
   if (typeof err === 'function') return err(arg);else return err;
 };
 

@@ -70,7 +70,7 @@ test("it finds the first error on submit", t => {
   const submit = new Event('submit')
   const form = streams.dom$()
   form.dispatchEvent(submit)
-  t.deepEqual(R.keys(streams.state.errors$()), ['email'])
+  t.deepEqual(R.keys(streams.state.errors$()), ['email', 'password'])
 })
 
 test('it does not invalidate blank fields that are not required on change', t => {
