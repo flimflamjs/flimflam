@@ -17,7 +17,7 @@ let myWizardState = wizard.init({
 
 ### wizard.labels(state, content)
 
-The `content` parameter is an array of vnodes or strings for each wizard index. 
+The `content` parameter is an array of vnodes or strings for each set of wizard labels. 
 
 ### wizard.content(state, content, followup)
 
@@ -30,14 +30,14 @@ The `followup` parameter is an optional snabbdom node that contains some content
 ```js
   const view = state =>
     h('div', [
-      wizard.index(
+      wizard.labels(
         state.wizard // state
       , [h('label', 'one'), h('label', 'two')] // content
       )
     , wizard.body(
         state.wizard // state
       , [h('div', 'content one'), h('div', 'content two')] // content
-      , h('p', 'You have completed the wizard!') // followup
+      , h('p', 'You have completed the wizard!') // optional followup
       )
     ])
 ```
