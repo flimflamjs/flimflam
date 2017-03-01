@@ -1,25 +1,21 @@
 {
-  "name": "ff-core",
-  "version": "0.6.0",
-  "description": "Flimflam core UI components",
+  "name": "flimflam",
+  "version": "0.7.0",
+  "description": "Flimflam UI components",
   "main": "index.js",
   "dependencies": {
-    "flyd": "0.2.2",
+    "flyd": "0.2.4",
     "form-serialize": "0.7.1",
-    "ramda": "0.21.0",
-    "snabbdom": "0.6.4",
+    "ramda": "0.23.0",
+    "snabbdom": "0.6.5",
     "snabbdom-merge": "0.0.4"
   },
   "devDependencies": {
     "autoprefixer": "6.7.0",
-    "babel-cli": "6.22.2",
-    "babel-preset-es2015": "6.16.0",
-    "babelify": "7.3.0",
     "browserify": "13.1.0",
     "budo": "9.2.1",
-    "cssify": "1.0.2",
+    "babel-preset-es2040": "1.1.1",
     "es2040": "1.2.4",
-    "flimflam-render": "0.2.1",
     "postcss-cli": "2.6.0",
     "postcss-import": "9.1.0",
     "tap-spec": "4.1.1",
@@ -29,15 +25,14 @@
     "ff-docs-theme": "https://github.com/flimflamjs/docs-theme.git"
   },
   "scripts": {
-    "test": "browserify -t babelify -t cssify test/index.js | tape-run | tap-spec",
-    "build": "./build-all.sh",
+    "test": "browserify -t es2040 ${TEST:-'.'}/test/index.js | tape-run --render='tap-spec'",
     "docs-build": "cp docs-src/index.html docs/index.html && cp docs-src/build.css docs/build.css && browserify docs-src/index.js -t es2040 -o docs/index.js",
     "docs-dev": "(cd docs-src; budo index.js --live --css build.css -- -t es2040)",
     "docs-css": "postcss -w -c docs-src/postcss-config.json"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/flimflamjs/ff-core.git"
+    "url": "git+https://github.com/flimflamjs/flimflam.git"
   },
   "keywords": [
     "flimflam"
@@ -45,7 +40,7 @@
   "author": "jay r bolton <jayrbolton@gmail.com> (http://jayrbolton.com/)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/flimflamjs/ff-core/issues"
+    "url": "https://github.com/flimflamjs/flimflam/issues"
   },
-  "homepage": "https://github.com/flimflamjs/ff-core#readme"
+  "homepage": "https://github.com/flimflamjs/flimflam#readme"
 }

@@ -1,8 +1,8 @@
 const flyd = require('flyd')
 const h = require('snabbdom/h').default
 const R = require('ramda')
-const validatedForm = require('../../validated-form/index.es6')
-const notification = require('../../notification')
+const validatedForm = require('../../ui/validated-form')
+const notification = require('../../ui/notification')
 
 const constraints = {
   email: {required: true, email: true}

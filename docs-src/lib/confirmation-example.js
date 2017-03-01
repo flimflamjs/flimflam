@@ -1,7 +1,7 @@
 const flyd = require('flyd')
 const h = require('snabbdom/h').default
 const R = require('ramda')
-const confirmation = require('../../confirmation')
+const confirmation = require('../../ui/confirmation')
 
 const view = state => {
   return h('div', [

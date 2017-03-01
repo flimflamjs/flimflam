@@ -1,7 +1,7 @@
 const flyd = require('flimflam/flyd')
 const h = require('flimflam/h')
 const R = require('ramda')
-const autocomplete = require('flimflam/ui/autocomplete')
+const autocomplete = require('../../ui/autocomplete')
 
 const init = () => {
 }

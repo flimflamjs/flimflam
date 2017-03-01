@@ -1,10 +1,10 @@
 const flyd = require('flyd')
 const h = require('snabbdom/h').default
 const R = require('ramda')
-const render = require('flimflam-render')
-const confirmation = require('../confirmation')
-const btn = require('../button')
-const modal = require('../modal')
+const render = require('../render')
+const confirmation = require('../ui/confirmation')
+const btn = require('../ui/button')
+const modal = require('../ui/modal')
 
 const wiz = require('./lib/wizard-example')
 const notif = require('./lib/notification-example')

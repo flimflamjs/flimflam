@@ -1,40 +1,38 @@
-# ff-core
 
-A package for the flimflam core UI components:
+# :cyclone: FLIMFLAM! :cyclone:
 
-* [render](https://github.com/jayrbolton/flimflam-render)
-* UI components:
-  * [modal](/modal)
-  * [wizard](/wizard)
-  * [notification](/notification)
-  * [button](/button)
-  * [confirmation](/confirmation)
-  * [validated-form](/validated-form)
-  * [tabswap](/tabswap)
-  * [autocomplete](/autocomplete)
+Flimflam is a system and a pattern for creating UI components on the web.
 
+You can **visit the website** here: [http://flimflamjs.github.io/](http://flimflamjs.github.io/).
+
+At its core, flimflam makes use of **[snabbdom](/h)** and **[flyd](/flyd)** for virtual DOM and asynchronous streams.
+
+This package comes with a set of **[core UI components](/ui)** that we find necessary in most any application. View them in the **[flimflam/ui](/ui)** directory.
+
+You can view a **demo of UI components** at this page: [http://flimflamjs.github.io/flimflam](http://flimflamjs.github.io/flimflam)
+
+Render your UI components to the page using **[flimflam/render](/render)**
+
+_Example_
 
 ```js
-const modal = require('ff-core/modal')
-const wizard = require('ff-core/wizard')
-const validatedForm = require('ff-core/validated-form')
-const render = require('ff-core/render')
-// etc
+var h = require('flimflam/h')
+var flyd = require('flimflam/flyd')
+var render = require('flimflam/render')
+var modal = require('flimflam/ui/modal')
+
+// Initialize the state object
+var init = function() {
+  return { showModal$: flyd.stream(false) }
+}
+
+// Render the state into markup
+var view = function(state) {
+  return h('body', [
+    h('button', {on: {click: state.showModal$}}, 'Say Hello')
+  , modal({show$: state.showModal$, body: h('p', 'Hello World!')})
+  ])
+}
+
+render(view, init(), document.body)
 ```
-
-Open up each module directory in github, and you can find documentation for each one in the README.md in each directory.
-
-To see a full directory of curated flimflam components, go to [https://flimflamjs.github.io](https://flimflamjs.github.io). This package is just for those components that we think nearly all applications will need (ie. a standard lib for ui components).
-
-## development
-
-Components are in es2015: source code lives in `component-name/index.es6` and the built files are `component-name/index.js`.
-
-* To build all components at once, run: `npm run build`
-* To build components individually, run: `babel component-name/index.es6 > component-name/index.js`
-
-Tests for each component live in their own directory under `component-name/test/index.js`. Tests use tape/tape-run/tap-spec
-
-* To run all tests at once, run: `npm run test`
-* To run tests individually, use the `run-test.sh` script with the name of the component: `./run-test.sh button`
-
