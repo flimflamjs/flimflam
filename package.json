@@ -30,7 +30,10 @@
   },
   "scripts": {
     "test": "browserify -t babelify -t cssify test/index.js | tape-run | tap-spec",
-    "build": "./build-all.sh"
+    "build": "./build-all.sh",
+    "docs-build": "cp docs-src/index.html docs/index.html && cp docs-src/build.css docs/build.css && browserify docs-src/index.js -t es2040 -o docs/index.js",
+    "docs-dev": "(cd docs-src; budo index.js --live --css build.css -- -t es2040)",
+    "docs-css": "postcss -w -c docs-src/postcss-config.json"
   },
   "repository": {
     "type": "git",

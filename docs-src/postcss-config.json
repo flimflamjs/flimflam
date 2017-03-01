@@ -1,0 +1,5 @@
+{
+  "use": ["postcss-import", "autoprefixer"]
+, "input": "demo-src/index.css"
+, "output": "demo-src/build.css"
+}

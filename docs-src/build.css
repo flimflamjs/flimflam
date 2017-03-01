@@ -1,0 +1,227 @@
+@font-face {
+  font-family: Inconsolata;
+  font-style: normal;
+  font-weight: 400;
+  src: local("Inconsolata Regular"),local(Inconsolata-Regular),url(//fonts.gstatic.com/s/inconsolata/v15/BjAYBlHtW3CJxDcjzrnZCGfQcKutQXcIrRfyR5jdjY8.eot?#) format("eot"),url(//fonts.gstatic.com/s/inconsolata/v15/BjAYBlHtW3CJxDcjzrnZCIbN6UDyHWBl620a-IRfuBk.woff) format("woff2"),url(//fonts.gstatic.com/s/inconsolata/v15/BjAYBlHtW3CJxDcjzrnZCIbN6UDyHWBl620a-IRfuBk.woff) format("woff");
+} 
+@font-face {
+  font-family: Inconsolata;
+  font-style: normal;
+  font-weight: 700;
+  src: local("Inconsolata Bold"),local(Inconsolata-Bold),url(//fonts.gstatic.com/s/inconsolata/v15/AIed271kqQlcIRSOnQH0ybFt29aCHKT7otDW9l62Aag.eot?#) format("eot"),url(//fonts.gstatic.com/s/inconsolata/v15/AIed271kqQlcIRSOnQH0yTqR_3kx9_hJXbbyU8S6IN0.woff) format("woff2"),url(//fonts.gstatic.com/s/inconsolata/v15/AIed271kqQlcIRSOnQH0yTqR_3kx9_hJXbbyU8S6IN0.woff) format("woff");
+} 
+@font-face {
+  font-family: Rubik;
+  font-style: italic;
+  font-weight: 300;
+  src: local("Rubik Light Italic"),local(Rubik-LightItalic),url(//fonts.gstatic.com/s/rubik/v3/jSFETpKxzveU_p3gZhzIHFQlYEbsez9cZjKsNMjLOwM.eot?#) format("eot"),url(//fonts.gstatic.com/s/rubik/v3/jSFETpKxzveU_p3gZhzIHBsxEYwM7FgeyaSgU71cLG0.woff) format("woff2"),url(//fonts.gstatic.com/s/rubik/v3/jSFETpKxzveU_p3gZhzIHBsxEYwM7FgeyaSgU71cLG0.woff) format("woff");
+} 
+@font-face {
+  font-family: Rubik;
+  font-style: italic;
+  font-weight: 400;
+  src: local("Rubik Italic"),local(Rubik-Italic),url(//fonts.gstatic.com/s/rubik/v3/aFXROJ6oH458ZIAMTgYySQ.eot?#) format("eot"),url(//fonts.gstatic.com/s/rubik/v3/OPYJOGLS2lfdqoDEaGxyDA.woff) format("woff2"),url(//fonts.gstatic.com/s/rubik/v3/OPYJOGLS2lfdqoDEaGxyDA.woff) format("woff");
+} 
+@font-face {
+  font-family: Rubik;
+  font-style: italic;
+  font-weight: 500;
+  src: local("Rubik Medium Italic"),local(Rubik-MediumItalic),url(//fonts.gstatic.com/s/rubik/v3/tPyoCFMoMFY1gioFWtoyXlQlYEbsez9cZjKsNMjLOwM.eot?#) format("eot"),url(//fonts.gstatic.com/s/rubik/v3/tPyoCFMoMFY1gioFWtoyXhsxEYwM7FgeyaSgU71cLG0.woff) format("woff2"),url(//fonts.gstatic.com/s/rubik/v3/tPyoCFMoMFY1gioFWtoyXhsxEYwM7FgeyaSgU71cLG0.woff) format("woff");
+} 
+@font-face {
+  font-family: Rubik;
+  font-style: italic;
+  font-weight: 700;
+  src: local("Rubik Bold Italic"),local(Rubik-BoldItalic),url(//fonts.gstatic.com/s/rubik/v3/wD94vlSNmKRl1po-RMwWclQlYEbsez9cZjKsNMjLOwM.eot?#) format("eot"),url(//fonts.gstatic.com/s/rubik/v3/wD94vlSNmKRl1po-RMwWchsxEYwM7FgeyaSgU71cLG0.woff) format("woff2"),url(//fonts.gstatic.com/s/rubik/v3/wD94vlSNmKRl1po-RMwWchsxEYwM7FgeyaSgU71cLG0.woff) format("woff");
+} 
+@font-face {
+  font-family: Rubik;
+  font-style: italic;
+  font-weight: 900;
+  src: local("Rubik Black Italic"),local(Rubik-BlackItalic),url(//fonts.gstatic.com/s/rubik/v3/UAhftYFr35UpkSlTfXNWL1QlYEbsez9cZjKsNMjLOwM.eot?#) format("eot"),url(//fonts.gstatic.com/s/rubik/v3/UAhftYFr35UpkSlTfXNWLxsxEYwM7FgeyaSgU71cLG0.woff) format("woff2"),url(//fonts.gstatic.com/s/rubik/v3/UAhftYFr35UpkSlTfXNWLxsxEYwM7FgeyaSgU71cLG0.woff) format("woff");
+} 
+@font-face {
+  font-family: Rubik;
+  font-style: normal;
+  font-weight: 300;
+  src: local("Rubik Light"),local(Rubik-Light),url(//fonts.gstatic.com/s/rubik/v3/WJYfot4nvWguliZiQ0KHUvesZW2xOQ-xsNqO47m55DA.eot?#) format("eot"),url(//fonts.gstatic.com/s/rubik/v3/lr6Pb3GuskYO6A0ddSEJcvesZW2xOQ-xsNqO47m55DA.woff) format("woff2"),url(//fonts.gstatic.com/s/rubik/v3/lr6Pb3GuskYO6A0ddSEJcvesZW2xOQ-xsNqO47m55DA.woff) format("woff");
+} 
+@font-face {
+  font-family: Rubik;
+  font-style: normal;
+  font-weight: 400;
+  src: local(Rubik),local(Rubik-Regular),url(//fonts.gstatic.com/s/rubik/v3/0f976ZfzmmYp7Tv7T3DB3A.eot?#) format("eot"),url(//fonts.gstatic.com/s/rubik/v3/KOAvUwfoM3DiLr6_Ac8qkg.woff) format("woff2"),url(//fonts.gstatic.com/s/rubik/v3/KOAvUwfoM3DiLr6_Ac8qkg.woff) format("woff");
+} 
+@font-face {
+  font-family: Rubik;
+  font-style: normal;
+  font-weight: 500;
+  src: local("Rubik Medium"),local(Rubik-Medium),url(//fonts.gstatic.com/s/rubik/v3/yFvcRay1ZOu26HH6CacUgPesZW2xOQ-xsNqO47m55DA.eot?#) format("eot"),url(//fonts.gstatic.com/s/rubik/v3/dr9AO_oRJOJvBo3VnoPe1_esZW2xOQ-xsNqO47m55DA.woff) format("woff2"),url(//fonts.gstatic.com/s/rubik/v3/dr9AO_oRJOJvBo3VnoPe1_esZW2xOQ-xsNqO47m55DA.woff) format("woff");
+} 
+@font-face {
+  font-family: Rubik;
+  font-style: normal;
+  font-weight: 700;
+  src: local("Rubik Bold"),local(Rubik-Bold),url(//fonts.gstatic.com/s/rubik/v3/AGAINRfrc_sL5zxVdgH1O_esZW2xOQ-xsNqO47m55DA.eot?#) format("eot"),url(//fonts.gstatic.com/s/rubik/v3/dwBNC4Sd5CDAYmaqw1hU7PesZW2xOQ-xsNqO47m55DA.woff) format("woff2"),url(//fonts.gstatic.com/s/rubik/v3/dwBNC4Sd5CDAYmaqw1hU7PesZW2xOQ-xsNqO47m55DA.woff) format("woff");
+} 
+@font-face {
+  font-family: Rubik;
+  font-style: normal;
+  font-weight: 900;
+  src: local("Rubik Black"),local(Rubik-Black),url(//fonts.gstatic.com/s/rubik/v3/uoYmAnIa8NjRiXX5h5bcEfesZW2xOQ-xsNqO47m55DA.eot?#) format("eot"),url(//fonts.gstatic.com/s/rubik/v3/sTiPQxXk0M6XQ-AVBh7ef_esZW2xOQ-xsNqO47m55DA.woff) format("woff2"),url(//fonts.gstatic.com/s/rubik/v3/sTiPQxXk0M6XQ-AVBh7ef_esZW2xOQ-xsNqO47m55DA.woff) format("woff");
+} 
+body {
+  background: white;
+  font-size: 18px;
+  font-family: "Rubik";
+  color: #444;
+  box-sizing: border-box;
+  line-height: 1.5em;
+} 
+h1, h2, h3, h4, h5, h6 {
+  padding-bottom: 0.4em;
+  margin-bottom: 0.4em;
+  border-bottom: 1px solid #c9e3eb;
+} 
+.codeSample {
+  display: block;
+  border: 1px solid #c9e3eb;
+  border-left: 4px solid #85b7c6;
+  background-color: #f8f8f8;
+  white-space: pre;
+  overflow-x: auto;
+  padding: 0 1em 0 1em;
+  font-family: "Inconsolata";
+  color: black;
+} 
+.blockLabel {
+  position: relative;
+} 
+.blockLabel:after {
+  content: attr(data-label);
+  position: absolute;
+  top: 1em;
+  right: 1em;
+  color: #85b7c6;
+} 
+code {
+  background-color: #f8f8f8;
+} 
+p.protip {
+  border: 1px solid #c9e3eb;
+  border-left: 4px solid #b8d7b8;
+  padding: 1em;
+  background-color: #f8f8f8;
+  position: relative;
+} 
+/* The parent wrapper */ 
+[data-ff-modal] {
+  position: fixed;
+  width: 500px;
+  margin-left: -250px;
+  left: 50%;
+  background: white;
+  z-index: 2;
+} 
+/* Shown and hidden states on the wrapper div */ 
+[data-ff-modal='shown'] {
+  display: block;
+} 
+[data-ff-modal='hidden'] {
+  display: none;
+} 
+/* Modal header and footer divs */ 
+[data-ff-modal-header],
+[data-ff-modal-footer] {
+  overflow: hidden;
+} 
+/* The body div of the modal, where the content goes */ 
+[data-ff-modal-body] {
+  overflow: auto;
+} 
+/* Styles for the backdrop overlay the modal */ 
+[data-ff-modal-backdrop] {
+  position: fixed;
+  height: 100%;
+  width: 100%;
+  top: 0;
+  left: 0;
+  background: rgba(0,0,0,0.3);
+  z-index: 1;
+  display: none;
+} 
+/* Shown and hidden states for the backdrop overlay */ 
+[data-ff-modal-backdrop='shown'] {
+  display: block;
+} 
+[data-ff-modal-backdrop='hidden'] {
+} 
+/* The modal close button -- you can use a pseudo-selector with a content rule to add a character or icon */ 
+[data-ff-modal-close-button] {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  cursor: pointer;
+} 
+[data-ff-wizard] {
+} 
+[data-ff-wizard-body] {
+} 
+[data-ff-wizard-followup] {
+} 
+[data-ff-wizard-followup='incomplete'] {
+  display: none;
+} 
+[data-ff-wizard-followup='complete'] {
+  display: block;
+} 
+[data-ff-wizard-label-wrapper] {
+} 
+[data-ff-wizard-label='complete'] {
+  display: none;
+} 
+[data-ff-wizard-label='incomplete'] {
+  display: block;
+} 
+[data-ff-wizard-label] {
+  display: inline-block;
+  text-align: center;
+} 
+[data-ff-wizard-label='current'] {
+  font-weight: bold;
+} 
+[data-ff-wizard-label='accessible'] {
+} 
+[data-ff-wizard-label='inaccessible'] {
+} 
+[data-ff-wizard-content-wrapper] {
+} 
+[data-ff-wizard-content-wrapper='complete'] {
+  display: none;
+} 
+[data-ff-wizard-content-wrapper='incomplete'] {
+  display: block;
+} 
+[data-ff-wizard-content] {
+} 
+[data-ff-wizard-content='not-current'] {
+  display: none;
+} 
+[data-ff-wizard-content='current'] {
+  display: block;
+} 
+[data-ff-notification] {
+} 
+[data-ff-notification='shown'] {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  text-align: center;
+  background: white;
+  padding: 1em;
+} 
+[data-ff-notification='hidden'] {
+  display: 'none';
+}
+
