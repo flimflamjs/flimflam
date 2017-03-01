@@ -53,6 +53,9 @@ var clearError = function(errors, focusEvent) {
 }
 
 var validateChange = R.curryN(3, function(config, errors, changeEvent) {
+  if(!changeEvent || !changeEvent.currentTarget) {
+    return errors
+  }
   var node = changeEvent.currentTarget
   return validateField(config, errors, node.name, node.value)
 })
