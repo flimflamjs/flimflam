@@ -11,7 +11,8 @@ flyd.scanMerge = require('flyd/module/scanmerge')
 var emailRegex = require('./lib/email-regex')
 var currencyRegex = require('./lib/currency-regex')
 
-function init(config={}) {
+function init(config) {
+  config = config || {}
   var events = {change$: flyd.stream(), submit$: flyd.stream(), focus$: flyd.stream()}
   var constraints = config.constraints
   var messages = R.merge(defaultMessages, config.messages)
