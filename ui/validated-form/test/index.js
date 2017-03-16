@@ -107,6 +107,28 @@ test('it gives data hash on valid submit', t => {
   t.deepEqual(streams.state.validData$(), {email: em})
 })
 
+// Test validator function recieves full form object
+test('matchesField works properly with a user signup form', t => {
+  const view = state => {
+    return h('form', [
+      h('input', {props: {type: 'email', name: 'email'}})
+    , h('input', {props: {type: 'password', name: 'password'}})
+    , h('input', {props: {type: 'password_confirmation', name: 'password_confirmation'}})
+    ])
+  }
+  const constraints = {
+    email: {required: true, email: true}
+  , password: {required: true, minLength: 7}
+  , password_confirmation: {required: true, matchesField: 'password'}
+  }
+  const state = {
+    form: validatedForm.init({constraints})
+  }
+  const container = document.createElement('div')
+  const result = render(view, state, container)
+  t.end()
+})
+
 // -- tests of validator functions
 
 test('email', t => {
