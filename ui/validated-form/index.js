@@ -148,14 +148,14 @@ var defaultMessages = {
 , currency: 'Please enter valid amount'
 , format: "This doesn't look like the right format"
 , isNumber: 'This should be a number'
-, max: function(n) {return `This should be less than ${n}`}
-, min: function(n) {return `This should be at least ${n}`}
-, equalTo: function(n) {return `This should be equal to ${n}`}
-, maxLength: function(n) {return `This should be no longer than ${n}`}
-, minLength: function(n) {return `This should be longer than ${n}`}
-, lengthEquals: function(n) {return `This should have a length of ${n}`}
-, includedIn: function(arr) {return `This should be one of: ${arr.join(', ')}`}
-, matchesField: function(n) {return `This field should match the ${n} field`}
+, max: function(n) {return "This should be less than " + n}
+, min: function(n) {return "This should be at least " + n}
+, equalTo: function(n) {return "This should be equal to " + n}
+, maxLength: function(n) {return "This should be no longer than " + n}
+, minLength: function(n) {return "This should be longer than " + n}
+, lengthEquals: function(n) {return "This should have a length of " + n}
+, includedIn: function(arr) {return "This should be one of: " + arr.join(', ')}
+, matchesField: function(n) {return "This field should match the " + n  + " field"}
 }
 
 // Does a field value match another field value, given the other's name and the full form data?
