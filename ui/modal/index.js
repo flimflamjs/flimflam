@@ -13,7 +13,7 @@ function view(state) {
   , attrs: {'data-ff-modal-backdrop': state.show$() ? 'shown' : 'hidden'}
   }, [
     h('div', {
-      hook
+      hook: hook
     , attrs: {'data-ff-modal': state.show$() ? 'shown' : 'hidden'}
     }, [
       state.notCloseable ? '' : closeBtn(state.show$)
