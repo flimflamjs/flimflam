@@ -186,4 +186,4 @@ var valIsUnset = function(val) {
   return val === undefined || val === '' || val === null
 }
 
-module.exports = {init, field, form}
+module.exports = {init: init, field: field, form: form}
