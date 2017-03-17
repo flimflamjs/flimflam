@@ -4,7 +4,8 @@ var flyd = require('flyd')
 var h = require('snabbdom/h').default
 
 var init = function(isOpen$) {
-  var [confirmed$, denied$] = [flyd.stream(), flyd.stream()]
+  var confirmed$ = flyd.stream()
+  var denied$ = flyd.stream()
   // Stream of true when confirmed, false when denied
   var response$ = flyd.merge(confirmed$, flyd.map(R.always(false), denied$))
   // Show the modal when isOpen$ has a value

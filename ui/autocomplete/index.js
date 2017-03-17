@@ -62,7 +62,8 @@ function init(state) {
 }
 
 var filterValues = function(matches, pair) {
-  var [newVal, values] = pair
+  var newVal = pair[0]
+  var values = pair[1]
   return newVal && newVal.length ? R.filter(function(v) {return v === '' || v.indexOf(newVal) === 0}, values) : matches
 }
 
