@@ -27,7 +27,7 @@ var labels = function(options) {
 var labelSingle = curryN(4, function(active$, width, name, idx) {
   return h('div', {
     attrs: {'data-ff-tabswap-label-wrapper': true}
-  , style: {width}
+  , style: {width: width}
   }, [
     h("a", {
       on: {click: [active$, idx]}
