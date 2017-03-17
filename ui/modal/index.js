@@ -1,4 +1,3 @@
-var flyd = require('flyd')
 var h = require('snabbdom/h').default
 var R = require('ramda')
 
@@ -45,13 +44,12 @@ var verticallyCenter = R.curryN(2, function(state, vnode) {
 })
 
 var addResizeListener = R.curryN(2, function(state, vnode) {
-  window.addEventListener('resize', function(ev) { verticallyCenter(state, vnode) })
+  window.addEventListener('resize', function() { verticallyCenter(state, vnode) })
 })
 
 // Push to the close stream if the user clicks the shaded backdrop element (and not anywhere within the modal itself)
 var closeIfOnBackdrop = R.curryN(3, function(show$, notCloseable, ev) {
   if(notCloseable) return
-  var className = ev.target.className
   // If not clicking the backdrop, don't close the modal, just return early
   if(!ev.target.hasAttribute('data-ff-modal-backdrop')) return
   // Else close the modal

@@ -39,7 +39,7 @@ var labelStep = R.curryN(4, function(state, width, content, idx) {
         : state.currentStep$() > idx ? 'accessible'
         : 'inaccessible'
     }
-  , on: {click: function(ev) {state.jump$([idx, state.currentStep$()])}}
+  , on: {click: function() {state.jump$([idx, state.currentStep$()])}}
   }, [content])
 })
 

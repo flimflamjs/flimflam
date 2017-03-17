@@ -1,12 +1,12 @@
-const flyd = require('flimflam/flyd')
+// const flyd = require('flimflam/flyd')
 const h = require('flimflam/h')
-const R = require('ramda')
-const autocomplete = require('../../ui/autocomplete')
+// const R = require('ramda')
+// const autocomplete = require('../../ui/autocomplete')
 
 const init = () => {
 }
 
-const view = state => {
+const view = () => {
   return h('div', [ ])
 }
 

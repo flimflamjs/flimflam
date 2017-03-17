@@ -1,5 +1,4 @@
 const test = require('tape')
-const flyd = require("flyd")
 const render = require('../../../render')
 const h = require('snabbdom/h').default
 
@@ -43,6 +42,6 @@ test('it removes notification after a ms delay', t => {
   streams.state.message$('hi!')
   t.equal(streams.dom$().querySelector('[data-ff-notification]').textContent, 'hi!')
   setTimeout(
-    ts => { t.equal(streams.dom$().querySelector('[data-ff-notification]').textContent, '') }
+    () => { t.equal(streams.dom$().querySelector('[data-ff-notification]').textContent, '') }
   , 100)
 })

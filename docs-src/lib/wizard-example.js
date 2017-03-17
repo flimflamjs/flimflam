@@ -1,6 +1,5 @@
 const flyd = require('flyd')
 const h = require('snabbdom/h').default
-const R = require('ramda')
 const wizard = require('../../ui/wizard')
 
 const init = () => {

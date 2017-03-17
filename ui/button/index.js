@@ -18,18 +18,18 @@ module.exports = function(state) {
   , loading$: stream()
   }, state)
 
-	return h('div', {
+  return h('div', {
     attrs: {'data-ff-button-wrapper': state.error$() ? 'error' : ''}
   }, [
-		h('p', {
+    h('p', {
       attrs: {'data-ff-button-error': state.error$() ? 'error' : ''}
     }, state.error$())
-  , h('button', { 
-      props: { type: 'submit', disabled: state.loading$() }
+  , h('button', {
+      props: {type: 'submit', disabled: state.loading$()}
     , attrs: {'data-ff-button': state.loading$() ? 'loading' : ''}
     }, [
       state.loading$() ? state.loadingText : state.buttonText
-		])
-	])
+    ])
+  ])
 }
 

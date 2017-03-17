@@ -61,7 +61,6 @@ test('on click of a label, it swaps data states of labels', t=> {
 test('on click of a label, it swaps data states of content', t=> {
   t.plan(1)
   const streams = init()
-  const content = streams.container.textContent
   streams.container.querySelectorAll('[data-ff-tabswap-label]')[1].click()
   const states = R.map(
     node => node.getAttribute('data-ff-tabswap-content')

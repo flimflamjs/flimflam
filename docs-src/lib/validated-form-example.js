@@ -1,6 +1,5 @@
 const flyd = require('flyd')
 const h = require('snabbdom/h').default
-const R = require('ramda')
 const validatedForm = require('../../ui/validated-form')
 const notification = require('../../ui/notification')
 

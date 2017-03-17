@@ -107,7 +107,7 @@ var dropdownValue = R.curryN(3, function(state, val, idx) {
   return h('div', {
     on: {
       mousedown: function(ev) { ev.preventDefault() }
-    , click: function(ev) {state.select$(state.partialMatches$[idx])}
+    , click: function() {state.select$(state.partialMatches$[idx])}
     , mouseover: [state.hoverVal$, idx]
     }
   , attrs: {'data-ff-autocomplete-value': state.dropdownIdx$() === idx ? 'selecting' : ''}

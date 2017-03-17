@@ -2,7 +2,6 @@ const test = require('tape')
 const R = require('ramda')
 const flyd = require('flyd')
 const render = require('../../../render')
-const h = require('snabbdom/h').default
 const button = require('../')
 
 

@@ -1,7 +1,6 @@
 const h = require('snabbdom/h').default
 const test = require('tape')
 const R = require("ramda")
-const flyd = require("flyd")
 const render = require('../../../render')
 
 const validatedForm = require('../')
@@ -109,7 +108,7 @@ test('it gives data hash on valid submit', t => {
 
 // Test validator function recieves full form object
 test('matchesField works properly with a user signup form', t => {
-  const view = state => {
+  const view = () => {
     return h('form', [
       h('input', {props: {type: 'email', name: 'email'}})
     , h('input', {props: {type: 'password', name: 'password'}})
@@ -125,7 +124,8 @@ test('matchesField works properly with a user signup form', t => {
     form: validatedForm.init({constraints})
   }
   const container = document.createElement('div')
-  const result = render(view, state, container)
+  render(view, state, container)
+  // TODO
   t.end()
 })
 

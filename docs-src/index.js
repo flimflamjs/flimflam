@@ -1,6 +1,5 @@
 const flyd = require('flyd')
 const h = require('snabbdom/h').default
-const R = require('ramda')
 const render = require('../render')
 const confirmation = require('../ui/confirmation')
 const btn = require('../ui/button')
