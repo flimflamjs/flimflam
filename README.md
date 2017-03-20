@@ -16,18 +16,18 @@ Render your UI components to the page using **[flimflam/render](/render)**
 _Example_
 
 ```js
-var h = require('flimflam/h')
-var flyd = require('flimflam/flyd')
-var render = require('flimflam/render')
-var modal = require('flimflam/ui/modal')
+const h = require('flimflam/h')
+const flyd = require('flimflam/flyd')
+const render = require('flimflam/render')
+const modal = require('flimflam/ui/modal')
 
 // Initialize the state object
-var init = function() {
+const init = function() {
   return { showModal$: flyd.stream(false) }
 }
 
 // Render the state into markup
-var view = function(state) {
+const view = function(state) {
   return h('body', [
     h('button', {on: {click: state.showModal$}}, 'Say Hello')
   , modal({show$: state.showModal$, body: h('p', 'Hello World!')})
