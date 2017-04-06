@@ -2,30 +2,26 @@ var h = require('snabbdom/h').default
 var R = require('ramda')
 
 function view(state) {
-  state = state || {
-    show$: flyd.stream(false)
-  , body: ''
+  var hook
+  if(state.noVerticalCentering) {
+    hook = {}
+  } else {
+    hook = { insert: addResizeListener(state), postpatch: verticallyCenter(state) }
   }
-  // if(state.noVerticalCentering)...
-
-  R.map(
-}
-
-function wrapper(state) {
   return h('div', { // shaded overlay around modal
     on: {click: closeIfOnBackdrop(state.show$, state.notCloseable)}
-  , attrs: {'data-ff-modal-backdrop': state.show$() ? 'shown' : 'hidden'}
-  }, [
-    h('div', {
-      hook: hook
-    , attrs: {'data-ff-modal': state.show$() ? 'shown' : 'hidden'}
-    }, [
-      state.notCloseable ? '' : closeBtn(state.show$)
-    , state.title ? header(state) : ''
-    , body(state)
-    , state.footer ? footer(state) : ''
-    ])
-  ])
+   , attrs: {'data-ff-modal-backdrop': state.show$() ? 'shown' : 'hidden'}
+   }, [
+   h('div', {
+     hook: hook
+   , attrs: {'data-ff-modal': state.show$() ? 'shown' : 'hidden'}
+   }, [
+     state.notCloseable ? '' : closeBtn(state.show$)
+   , state.title ? header(state) : ''
+   , body(state)
+   , state.footer ? footer(state) : ''
+   ])
+ ])
 }
 
 function view(state) {
