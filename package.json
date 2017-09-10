@@ -1,34 +1,21 @@
 {
   "name": "flimflam",
-  "version": "0.7.6",
+  "version": "0.8.0",
   "description": "Flimflam UI components",
   "main": "index.js",
   "dependencies": {
     "flyd": "0.2.4",
-    "form-serialize": "0.7.1",
-    "ramda": "0.23.0",
-    "snabbdom": "0.6.5",
-    "snabbdom-merge": "0.0.4"
+    "snabbdom": "0.7.0"
   },
   "devDependencies": {
-    "autoprefixer": "6.7.0",
     "browserify": "13.1.0",
-    "budo": "9.2.1",
-    "babel-preset-es2040": "1.1.1",
     "es2040": "1.2.4",
-    "postcss-cli": "2.6.0",
-    "postcss-import": "9.1.0",
     "tap-spec": "4.1.1",
     "tape": "4.6.3",
-    "tape-run": "2.1.5",
-    "zuul": "3.11.1",
-    "ff-docs-theme": "https://github.com/flimflamjs/docs-theme.git"
+    "tape-run": "2.1.5"
   },
   "scripts": {
-    "test": "browserify -t es2040 ${TEST:-'.'}/test/index.js | tape-run --render='tap-spec'",
-    "docs-build": "cp docs-src/index.html docs/index.html && cp docs-src/build.css docs/build.css && browserify docs-src/index.js -t es2040 -o docs/index.js",
-    "docs-dev": "(cd docs-src; budo index.js --live --css build.css -- -t es2040)",
-    "docs-css": "postcss -w -c docs-src/postcss-config.json"
+    "test": "browserify -t es2040 ${TEST:-'.'}/test/index.js | tape-run --render='tap-spec'"
   },
   "repository": {
     "type": "git",

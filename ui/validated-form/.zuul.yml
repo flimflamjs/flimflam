@@ -1,7 +1,0 @@
-ui: mocha-qunit
-browsers: 
-  - name: firefox
-    version: latest
-browserify:
-  - transform:
-      name: babelify
